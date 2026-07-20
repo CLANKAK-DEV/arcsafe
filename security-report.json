@@ -1,0 +1,96 @@
+{
+  "project": "ArcSafe — N-of-M multi-signature wallet for Arc Chain",
+  "date": "2026-07-20",
+  "remediation_pass": "2026-07-20",
+  "scope": {
+    "contracts": ["contracts/ArcSafe.sol", "contracts/ArcSafeFactory.sol", "contracts/test/Reenterer.sol"],
+    "tooling": ["hardhat.config.js", "scripts/deploy.js", "scripts/verify-deployment.js", "scripts/check-secrets.js"],
+    "frontend": "frontend/src (Next.js 14 static export, ethers v6)",
+    "deploy": ["deploy/nginx-arcsafe.conf"],
+    "secrets_reviewed": [".env", "frontend/.env.local", ".env.example", ".gitignore"]
+  },
+  "baseline_tests": { "command": "npx hardhat test", "result": "42 passing", "exit_code": 0 },
+  "post_patch_tests": { "command": "npx hardhat test", "result": "43 passing", "exit_code": 0, "frontend_typecheck": "clean", "check_secrets": "OK" },
+  "completion_condition_met": true,
+  "summary": { "critical": 0, "high": 1, "medium": 1, "low": 2 },
+  "status_after_remediation": { "patched": ["SEC-002", "SEC-004"], "mitigated_owner_action": ["SEC-001"], "accepted": ["SEC-003"] },
+  "findings": [
+    {
+      "id": "SEC-001",
+      "title": "Deployer private key stored in cleartext in .env",
+      "severity": "High",
+      "confidence": "Confirmed",
+      "cwe": "CWE-312",
+      "owasp_category": "A02:2021 Cryptographic Failures",
+      "file": ".env",
+      "lines": "11",
+      "status": "Open (mitigated)",
+      "root_cause": "Deployer secret kept unencrypted at rest. Not committed (gitignored; tree not under git), but a cleartext copy on disk is exposed by any zip/backup/screen-share or a premature git init.",
+      "impact": "Full control of every account the key owns. Bounded to testnet today; becomes Critical and an irreversible loss of funds if reused for a mainnet deployer or an owner of a funded safe.",
+      "remediation": "Treat as testnet-only/disposable; never reuse for mainnet or a funded owner slot; rotate if ever shared/backed up/committed; prefer an encrypted keystore or secret manager over a plaintext file; verify .gitignore covers .env before any git init.",
+      "remediation_applied": "Full-tree scan confirmed the key appears only in .env (other 64-hex hits are tx hashes/bytecode). Added scripts/check-secrets.js + `npm run check:secrets` guard. Key value unchanged — rotation is owner-only and remains the open item.",
+      "validation_test": "npm run check:secrets => OK; grep -nE '0x[0-9a-fA-F]{64}' .env matches only a confirmed throwaway.",
+      "redacted_value": "0xb7d3****0cca"
+    },
+    {
+      "id": "SEC-002",
+      "title": "No Content-Security-Policy or security response headers; site served over plain HTTP",
+      "severity": "Medium",
+      "confidence": "Confirmed",
+      "cwe": "CWE-693",
+      "owasp_category": "A05:2021 Security Misconfiguration",
+      "file": "deploy/nginx-arcsafe.conf, frontend/src/pages/_app.tsx",
+      "lines": "n/a",
+      "status": "Patched (pending deploy)",
+      "root_cause": "Security headers for a static export are set at the web server; none were configured in-repo or documented for the nginx deployment, and the live site was served over HTTP.",
+      "impact": "Reduced defense-in-depth for a high-value wallet dApp: clickjacking via missing frame-ancestors, in-transit tampering without HTTPS/HSTS. Injected-script XSS surface is low (React auto-escapes, no innerHTML/eval, no cookies), hence Medium not High.",
+      "remediation": "Serve over HTTPS and add CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy at nginx; self-host fonts to tighten CSP.",
+      "remediation_applied": "Added deploy/nginx-arcsafe.conf (HTTPS server block with CSP scoped to the two Arc RPC origins, HSTS, X-Frame-Options DENY, nosniff, Referrer-Policy no-referrer, Permissions-Policy, COOP, HTTP->HTTPS redirect, immutable asset caching). Added <meta name=referrer content=no-referrer> in _app.tsx. Effective once deployed over TLS.",
+      "validation_test": "curl -sI https://<host>/arcsafe/ | grep -iE 'content-security-policy|x-frame-options|strict-transport-security'"
+    },
+    {
+      "id": "SEC-003",
+      "title": "Fund-custody contract is unaudited by a third party",
+      "severity": "Low",
+      "confidence": "Confirmed",
+      "cwe": "CWE-1053",
+      "owasp_category": "n/a (process)",
+      "file": "contracts/ArcSafe.sol, contracts/ArcSafeFactory.sol",
+      "lines": "whole files",
+      "status": "Accepted risk",
+      "root_cause": "Pre-audit software, openly disclosed in README and the app UI.",
+      "impact": "Bounded to testnet now; roadmap items (EIP-712 approvals, modules, session keys, ERC-4337, mainnet) materially raise the value of an independent audit before shipping.",
+      "remediation": "Keep the not-audited/testnet disclosure prominent; commission an independent audit before mainnet or before adding off-chain signature approvals; re-run this pass after each roadmap feature.",
+      "validation_test": "Process: audit report on file before a mainnet deploy tag."
+    },
+    {
+      "id": "SEC-004",
+      "title": "Unreachable SafeAlreadyExists error yields opaque CREATE2 collision revert",
+      "severity": "Low",
+      "confidence": "Confirmed",
+      "cwe": "CWE-1164",
+      "owasp_category": "n/a",
+      "file": "contracts/ArcSafeFactory.sol",
+      "lines": "12, 24-39",
+      "status": "Patched",
+      "root_cause": "Dead error declared but never reverted; a same-salt/same-args createSafe reverted at the EVM level from the new ArcSafe{salt} collision with no decodable custom error.",
+      "impact": "No fund/authorization impact; a colliding deployment surfaced as a generic revert the frontend could not humanize.",
+      "remediation": "Pre-check predicted CREATE2 address and revert SafeAlreadyExists() when occupied; map the error in the UI.",
+      "remediation_applied": "createSafe now pre-checks via a shared _predict helper (refactored out of predictAddress) and reverts SafeAlreadyExists(). Error added to FACTORY_ABI and humanizeError. New regression test added. Suite 43 passing. Requires a factory redeploy to carry the new bytecode on-chain.",
+      "validation_test": "Hardhat test 'rejects a repeat deployment with a named error instead of an opaque revert' => passing."
+    }
+  ],
+  "false_positives": [
+    "window.location.reload() in wallet.ts chainChanged handler — cache invalidation on network change, not a redirect/injection sink.",
+    "http:// matches — only in Markdown docs; all runtime RPC/explorer URLs are HTTPS (the plain-HTTP serving of the site is tracked separately as SEC-002).",
+    "NEXT_PUBLIC_* env values — intended public contract addresses, never secrets; no key is NEXT_PUBLIC_.",
+    "64-hex matches in artifacts/ and docs — transaction hashes and contract bytecode, not the private key (confirmed the literal key value appears only in .env)."
+  ],
+  "patches_applied": [
+    { "finding": "SEC-004", "files": ["contracts/ArcSafeFactory.sol", "frontend/src/lib/config.ts", "frontend/src/lib/format.ts", "test/ArcSafe.test.js"] },
+    { "finding": "SEC-002", "files": ["deploy/nginx-arcsafe.conf", "frontend/src/pages/_app.tsx"] },
+    { "finding": "SEC-001", "files": ["scripts/check-secrets.js", "package.json"] }
+  ],
+  "patch_file": "security-fixes.patch",
+  "patch_note": "Working tree is not under git, so security-fixes.patch is a documented file-by-file change list rather than a git diff. No secret value appears in it."
+}

@@ -1,0 +1,41 @@
+# ── Secrets ─────────────────────────────────────────────────────────
+# A leaked deployer key is an immediate, irreversible loss of funds.
+# Only the .example templates are ever committed.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ── Node ────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ── Hardhat ─────────────────────────────────────────────────────────
+artifacts/
+cache/
+coverage/
+coverage.json
+typechain-types/
+
+# Stale compiler output from an earlier toolchain. Kept out of the repo
+# because it contains bytecode for the pre-fix, drainable contract.
+build/
+
+# ── Next.js ─────────────────────────────────────────────────────────
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo
+
+# ── Vercel ──────────────────────────────────────────────────────────
+# Local project-link IDs. Vercel's own tooling recommends ignoring this.
+.vercel/
+**/.vercel/
+
+# ── Editors / OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

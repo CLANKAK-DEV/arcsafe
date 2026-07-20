@@ -1,0 +1,118 @@
+/* Self-hosting these would be better, but the export has to build offline on
+   the VPS too — the system stack below carries the design if the fetch fails. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base text-primary font-sans antialiased;
+    /* Quiet ledger grid: enough structure to feel engineered, not decorative.
+       Cool silver hairlines over a navy wash that echoes the mark's field. */
+    background-image:
+      linear-gradient(rgba(220, 231, 242, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(220, 231, 242, 0.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(27, 62, 99, 0.30), transparent 22rem);
+    background-size: 48px 48px, 48px 48px, auto;
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  /* Never remove the focus ring — retheme it. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-base rounded-sm;
+  }
+
+  ::selection {
+    background: rgba(107, 165, 220, 0.30);
+  }
+
+  /* Addresses, hashes and amounts must not reflow as digits change. */
+  code,
+  kbd,
+  samp,
+  .tabular {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  .card {
+    @apply min-w-0 rounded-card border border-hairline bg-surface/80 shadow-card backdrop-blur-sm;
+  }
+
+  /* Headline emphasis — the metallic sheen of the Arc mark.
+     A background-clip gradient normally risks contrast, so this one is
+     deliberately narrow: both stops are near-white silver drawn from the top
+     of the arch (#FFFFFF → #DCE7F2), each above 15:1 on the navy base. The
+     solid `color` below is the fallback wherever background-clip is
+     unsupported (older engines, forced-colours, print), so the text never
+     disappears. */
+  .text-arch {
+    color: #E9F0F8;
+    background: linear-gradient(155deg, #FFFFFF 0%, #DCE7F2 55%, #C4D3E6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Forced-colours (Windows high-contrast) must win: restore system text. */
+  @media (forced-colors: active) {
+    .text-arch {
+      background: none;
+      -webkit-text-fill-color: CanvasText;
+      color: CanvasText;
+    }
+  }
+
+  .rule {
+    @apply h-px w-full border-0 bg-gradient-to-r from-transparent via-hairline-strong to-transparent;
+  }
+
+  /* Loading placeholder that reserves layout so nothing shifts on arrival. */
+  .skeleton {
+    @apply relative overflow-hidden rounded bg-surface-2;
+  }
+  .skeleton::after {
+    @apply absolute inset-0 animate-shimmer;
+    content: '';
+    background: linear-gradient(90deg, transparent, rgba(155, 176, 199, 0.09), transparent);
+    transform: translateX(-100%);
+  }
+}
+
+/* Honour the OS setting. Motion becomes instant, never broken. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

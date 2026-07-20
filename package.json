@@ -1,0 +1,23 @@
+{
+  "name": "arc-safe",
+  "version": "0.2.0",
+  "description": "ArcSafe — N-of-M multi-signature wallet for Arc Chain",
+  "author": "SoftNox",
+  "license": "MIT",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "test:gas": "REPORT_GAS=true hardhat test",
+    "coverage": "hardhat coverage",
+    "node": "hardhat node",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network arcTestnet",
+    "verify:deployment": "hardhat run scripts/verify-deployment.js --network arcTestnet",
+    "check:secrets": "node scripts/check-secrets.js",
+    "size": "hardhat compile && hardhat size-contracts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^17.4.2",
+    "hardhat": "^2.22.17"
+  }
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔐 ArcSafe — Multi-sig on Arc</title>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; color:#fff; font-family:-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; }
+  .container { max-width:600px; margin:0 auto; padding:20px; }
+  .card { background:#111; border:1px solid #222; border-radius:16px; padding:20px; margin-bottom:16px; }
+  input, button, select { width:100%; padding:12px; border-radius:10px; font-size:14px; margin-bottom:8px; }
+  input, select { background:#1a1a1a; border:1px solid #333; color:#fff; font-family:monospace; }
+  button { border:none; font-weight:bold; cursor:pointer; transition:all .2s; color:#fff; }
+  .btn-green { background:#16a34a; } .btn-green:hover { background:#15803d; }
+  .btn-blue { background:#2563eb; } .btn-blue:hover { background:#1d4ed8; }
+  .btn-purple { background:#7c3aed; } .btn-purple:hover { background:#6d28d9; }
+  .btn-red { background:#dc2626; } .btn-red:hover { background:#b91c1c; }
+  .btn-sm { width:auto; padding:6px 14px; font-size:12px; display:inline; }
+  .stat { background:#1a1a1a; border-radius:10px; padding:12px; text-align:center; }
+  .stat-val { font-size:24px; font-weight:bold; }
+  .stat-lbl { font-size:11px; color:#888; margin-top:4px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .flex { display:flex; gap:8px; align-items:center; }
+  .flex-between { display:flex; justify-content:space-between; align-items:center; }
+  .badge { font-size:11px; padding:3px 8px; border-radius:20px; }
+  .badge-green { background:#052e16; color:#4ade80; }
+  .badge-yellow { background:#422006; color:#fbbf24; }
+  .mono { font-family:monospace; font-size:12px; color:#888; }
+  .tx-item { background:#1a1a1a; border-radius:10px; padding:14px; margin-bottom:10px; }
+  h1 { font-size:28px; }
+  h2 { font-size:18px; margin-bottom:12px; }
+  .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#16a34a; color:#fff; padding:12px 24px; border-radius:10px; font-weight:bold; z-index:999; display:none; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LANDING -->
+<div id="landing" class="container" style="padding-top:60px">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="font-size:64px">🔐</div>
+    <h1>ArcSafe</h1>
+    <p style="color:#888;margin-top:8px">Multi-sig wallet for Arc Chain</p>
+    <p style="color:#4ade80;font-size:13px;margin-top:4px">🟢 Arc Testnet (5042002)</p>
+  </div>
+  
+  <button class="btn-green" onclick="connectAndLoad('0xB81E936BE2dfee71d52EFeCa6eacbfcbAF969C00')" style="margin-bottom:12px;font-size:16px">
+    🧪 TEST DEMO SAFE
+  </button>
+  
+  <p style="text-align:center;color:#444;margin:12px 0">— or —</p>
+  
+  <div class="card">
+    <input id="customAddr" placeholder="Paste ArcSafe address (0x...)" style="margin-bottom:8px">
+    <button class="btn-blue" onclick="connectAndLoad(document.getElementById('customAddr').value)">Load Safe</button>
+  </div>
+
+  <div class="card" style="opacity:0.7">
+    <div class="flex-between" style="margin-bottom:6px"><span style="color:#888;font-size:13px">Demo: </span><span class="mono">0xB81E...9C00</span></div>
+    <div class="flex-between" style="margin-bottom:6px"><span style="color:#888;font-size:13px">Owners: </span><span style="font-size:13px">3 wallets</span></div>
+    <div class="flex-between" style="margin-bottom:6px"><span style="color:#888;font-size:13px">Threshold: </span><span style="font-size:13px">2 of 3</span></div>
+  </div>
+  <p style="text-align:center;color:#444;font-size:12px">Connect MetaMask → Arc Testnet → Test</p>
+</div>
+
+<!-- DASHBOARD (hidden initially) -->
+<div id="dash" class="container" style="display:none;padding-top:20px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <button onclick="goBack()" style="width:auto;background:none;border:1px solid #333;padding:8px 12px;border-radius:8px;color:#888;cursor:pointer">← Back</button>
+    <h1 style="font-size:22px">🔐 ArcSafe</h1>
+  </div>
+  <p class="mono" id="safeAddr" style="margin-bottom:16px;word-break:break-all"></p>
+  
+  <!-- Stats -->
+  <div class="grid3" style="margin-bottom:16px">
+    <div class="stat"><div class="stat-val" style="color:#4ade80" id="bal"></div><div class="stat-lbl">ARC Balance</div></div>
+    <div class="stat"><div class="stat-val" style="color:#60a5fa" id="ocnt"></div><div class="stat-lbl">Owners</div></div>
+    <div class="stat"><div class="stat-val" style="color:#fbbf24" id="thr"></div><div class="stat-lbl">Threshold</div></div>
+  </div>
+
+  <!-- Owners -->
+  <div class="card"><h2>👥 Owners</h2><div id="ownersList"></div></div>
+
+  <!-- New TX -->
+  <div class="card">
+    <h2>📝 New Transaction</h2>
+    <input id="txTo" placeholder="To address (0x...)">
+    <div class="flex"><input id="txValue" placeholder="Value (ARC)" style="flex:1"><input id="txData" placeholder="Data (0x...)" value="0x" style="flex:1"></div>
+    <button class="btn-blue" onclick="submitTx()">Submit</button>
+  </div>
+
+  <!-- TX List -->
+  <div class="card"><h2>📜 Transactions</h2><div id="txList"><p style="color:#444">No transactions yet</p></div></div>
+</div>
+
+<script>
+const ABI = [
+  'function owners(uint256) view returns (address)',
+  'function isOwner(address) view returns (bool)',
+  'function threshold() view returns (uint256)',
+  'function nonce() view returns (uint256)',
+  'function submit(address,uint256,bytes) returns (uint256)',
+  'function approve(uint256)',
+  'function revoke(uint256)',
+  'function execute(uint256)',
+  'function getOwners() view returns (address[])',
+  'function getApprovalCount(uint256) view returns (uint256)',
+  'function getTransaction(uint256) view returns (address,uint256,bytes,bool,uint256)',
+  'event Submitted(uint256,address,uint256)',
+  'event Approved(uint256,address)',
+  'event Executed(uint256)',
+  'event Deposited(address,uint256)',
+  'receive() payable',
+];
+
+const CHAIN = { chainId:'0x4CEF52', name:'Arc Testnet', rpc:'https://arc-testnet.rpc.thirdweb.com', explorer:'https://testnet.arcscan.app' };
+let contract = null, provider = null, safeAddr = '';
+
+async function connectAndLoad(addr) {
+  if (!addr || addr.trim().length < 20) return alert('Enter valid address');
+  if (!window.ethereum) return alert('Install MetaMask first');
+  
+  try {
+    await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:CHAIN.chainId}] });
+  } catch(e) {
+    await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{chainId:CHAIN.chainId, chainName:CHAIN.name, rpcUrls:[CHAIN.rpc], nativeCurrency:{name:'ARC',symbol:'ARC',decimals:18}, blockExplorerUrls:[CHAIN.explorer]}] });
+  }
+  
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  safeAddr = ethers.utils.getAddress(addr);
+  contract = new ethers.Contract(safeAddr, ABI, signer);
+  
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  document.getElementById('safeAddr').textContent = safeAddr;
+  document.getElementById('txTo').value = '';
+  document.getElementById('txValue').value = '';
+  
+  await refresh();
+  toast('✅ Safe loaded!');
+}
+
+function goBack() { document.getElementById('dash').style.display='none'; document.getElementById('landing').style.display='block'; contract=null; }
+
+async function refresh() {
+  if (!contract) return;
+  const [o, t, b, n] = await Promise.all([
+    contract.getOwners(), contract.threshold(), provider.getBalance(safeAddr), contract.nonce()
+  ]);
+  document.getElementById('bal').textContent = parseFloat(ethers.utils.formatEther(b)).toFixed(4);
+  document.getElementById('ocnt').textContent = o.length;
+  document.getElementById('thr').textContent = t+'/'+o.length;
+  document.getElementById('ownersList').innerHTML = o.map((x,i) => `<div class="flex" style="margin-bottom:4px"><span style="color:#444;font-size:12px;width:24px">${i+1}.</span><code style="color:#aaa;font-size:12px">${x}</code></div>`).join('');
+  
+  // Load last 20 TXs
+  const txs = [];
+  for (let i = Math.max(0, n-20); i < n; i++) {
+    const tx = await contract.getTransaction(i);
+    txs.push({ id:i, to:tx[0], value:tx[1], data:tx[2], executed:tx[3], approvals:Number(tx[4]) });
+  }
+  txs.reverse();
+  document.getElementById('txList').innerHTML = txs.length === 0 ? '<p style="color:#444">No transactions yet</p>' :
+    txs.map(tx => `
+    <div class="tx-item">
+      <div class="flex-between" style="margin-bottom:6px">
+        <span style="font-size:11px;color:#555">TX #${tx.id}</span>
+        <span class="badge ${tx.executed?'badge-green':'badge-yellow'}">${tx.executed?'✅ Executed':'⏳ '+tx.approvals+'/'+Number(document.getElementById('thr').textContent.split('/')[0])+' signed'}</span>
+      </div>
+      <div class="mono">To: ${tx.to.slice(0,10)}...${tx.to.slice(-6)}</div>
+      <div style="color:#aaa;font-size:12px">${ethers.utils.formatEther(tx.value)} ARC</div>
+      ${!tx.executed ? `<div class="flex" style="margin-top:8px">
+        <button class="btn-green btn-sm" onclick="approveTx(${tx.id})">✅ Approve</button>
+        ${tx.approvals >= Number(document.getElementById('thr').textContent.split('/')[0]) ? `<button class="btn-purple btn-sm" onclick="executeTx(${tx.id})">🚀 Execute</button>` : ''}
+      </div>` : ''}
+    </div>`).join('');
+}
+
+async function submitTx() {
+  const to = document.getElementById('txTo').value;
+  const val = document.getElementById('txValue').value || '0';
+  const data = document.getElementById('txData').value || '0x';
+  if (!to) return alert('Enter destination address');
+  try {
+    const tx = await contract.submit(ethers.utils.getAddress(to), ethers.utils.parseEther(val), data);
+    toast('📤 Submitting...');
+    await tx.wait();
+    document.getElementById('txTo').value = '';
+    document.getElementById('txValue').value = '';
+    document.getElementById('txData').value = '0x';
+    await refresh();
+    toast('✅ Submitted! Waiting for approvals.');
+  } catch(e) { toast('❌ '+e.message.slice(0,80)); }
+}
+
+async function approveTx(id) {
+  try { const tx = await contract.approve(id); toast('✅ Approving...'); await tx.wait(); await refresh(); toast('✅ Approved!'); }
+  catch(e) { toast('❌ '+e.message.slice(0,80)); }
+}
+
+async function executeTx(id) {
+  try { const tx = await contract.execute(id); toast('🚀 Executing...'); await tx.wait(); await refresh(); toast('✅ Executed!'); }
+  catch(e) { toast('❌ '+e.message.slice(0,80)); }
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>

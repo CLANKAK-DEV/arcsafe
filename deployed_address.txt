@@ -1,0 +1,11 @@
+# No current deployment.
+#
+# This file previously contained 0xB81E936BE2dfee71d52EFeCa6eacbfcbAF969C00.
+# That address holds no bytecode: its creation transaction
+# (0xe55a6eb4f961a5406e348c2db5b45e9c3ae8a8d95794eb51605ae26d45962ed7)
+# reverted out of gas, status 0x0. A creation receipt reports a
+# contractAddress whether or not the creation succeeded, which is how the
+# dead address ended up here.
+#
+# After deploying, record the address only once this passes:
+#   SAFE=0x... npm run verify:deployment

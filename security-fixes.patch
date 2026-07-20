@@ -1,0 +1,109 @@
+ArcSafe — security-fixes.patch
+Remediation pass 2026-07-20. Maps to security-report.md §9.
+
+NOTE: the working tree is NOT under version control (no .git), so this is a
+documented, file-by-file change list rather than a `git diff` / `git apply`
+patch. No secret value appears anywhere in this file. Once the tree is under
+git, `git diff` will reproduce these same hunks.
+
+================================================================================
+SEC-004 — CREATE2 collision now reverts with a named, decodable error
+================================================================================
+
+--- contracts/ArcSafeFactory.sol  (createSafe)
+    Added, after computing scopedSalt and before `new ArcSafe{salt}`:
+
++       // Fail with a named error the UI can explain when this exact
++       // (deployer, salt, owners, threshold) tuple was already deployed.
++       // Without this the CREATE2 collision reverts with no decodable reason.
++       address predicted = _predict(scopedSalt, owners, threshold);
++       if (predicted.code.length != 0) revert SafeAlreadyExists();
+
+--- contracts/ArcSafeFactory.sol  (predictAddress -> shared _predict helper)
+    predictAddress now delegates the CREATE2 math to a private _predict() so the
+    collision guard and the public predictor can never diverge:
+
+-   function predictAddress(...) external view returns (address) {
+-       bytes32 scopedSalt = keccak256(abi.encodePacked(deployer, salt));
+-       bytes32 initCodeHash = keccak256(abi.encodePacked(type(ArcSafe).creationCode, abi.encode(owners, threshold)));
+-       return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), scopedSalt, initCodeHash)))));
+-   }
++   function predictAddress(...) external view returns (address) {
++       return _predict(keccak256(abi.encodePacked(deployer, salt)), owners, threshold);
++   }
++
++   function _predict(bytes32 scopedSalt, address[] calldata owners, uint256 threshold)
++       private view returns (address)
++   {
++       bytes32 initCodeHash = keccak256(abi.encodePacked(type(ArcSafe).creationCode, abi.encode(owners, threshold)));
++       return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), scopedSalt, initCodeHash)))));
++   }
+
+--- frontend/src/lib/config.ts  (FACTORY_ABI)
+    Declared the factory's custom errors so ethers can decode a revert:
+
++   'error NoOwners()',
++   'error SafeAlreadyExists()',
+
+--- frontend/src/lib/format.ts  (humanizeError map)
+    Mapped the new errors to plain sentences:
+
++   SafeAlreadyExists: 'A safe with these exact owners and threshold already exists at this address. Change the owners or threshold, or try again to get a fresh address.',
++   NoOwners: 'A safe needs at least one owner.',
+
+--- test/ArcSafe.test.js  (ArcSafeFactory describe block)
+    Added regression test:
+    "rejects a repeat deployment with a named error instead of an opaque revert"
+    Asserts a duplicate createSafe reverts with SafeAlreadyExists and leaves the
+    index untouched. Suite: 42 -> 43 passing.
+
+  ON-CHAIN NOTE: this changes factory bytecode. Redeploy the factory to carry
+  the fix on-chain; existing safes are unaffected (ArcSafe bytecode unchanged,
+  so predicted safe addresses are stable).
+
+================================================================================
+SEC-002 — Security response headers (CSP/HSTS/XFO/nosniff/Referrer/...)
+================================================================================
+
+--- deploy/nginx-arcsafe.conf   (NEW FILE)
+    HTTPS server block serving the static export at /arcsafe/, with:
+      Content-Security-Policy (script-src 'self'; connect-src scoped to
+        https://rpc.testnet.arc.network + https://arc-testnet.rpc.thirdweb.com;
+        frame-ancestors 'none'; base-uri 'self'; object-src 'none')
+      Strict-Transport-Security (2y, includeSubDomains)
+      X-Frame-Options: DENY
+      X-Content-Type-Options: nosniff
+      Referrer-Policy: no-referrer
+      Permissions-Policy (camera/microphone/geolocation/payment denied)
+      Cross-Origin-Opener-Policy: same-origin
+      HTTP->HTTPS redirect; immutable caching for _next/static.
+    ACTION: install over TLS on the VPS (steps in the file header), then verify
+    with the curl command in security-report.md §12.
+
+--- frontend/src/pages/_app.tsx   (<Head>)
+    Document-level control that works even before the server block is deployed:
+
++   <meta name="referrer" content="no-referrer" />
+
+================================================================================
+SEC-001 — Guard against future private-key exposure (rotation stays owner-only)
+================================================================================
+
+--- scripts/check-secrets.js   (NEW FILE)
+    Scans the working tree (excluding node_modules/.env/build outputs) for the
+    .env PRIVATE_KEY value or any hardcoded key-like 64-hex assignment; exits 1
+    on a hit; redacts every match. Confirmed clean on this tree.
+
+--- package.json   (scripts)
++   "check:secrets": "node scripts/check-secrets.js",
+
+  The key value itself was NOT modified — rotation is an irreversible action
+  only the key owner can safely perform. See security-report.md §5 (SEC-001).
+
+================================================================================
+Validation after applying
+================================================================================
+  npx hardhat test        -> 43 passing (was 42)
+  npx tsc --noEmit (frontend) -> clean
+  npm run check:secrets   -> OK, no key outside .env
+  Live preview /arcsafe/ + /arcsafe/create/ -> renders, no console errors
