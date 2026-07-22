@@ -50,14 +50,14 @@ module.exports = {
         danger: '#F0717A',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+        sans: ['Aptos', 'Segoe UI Variable', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Cascadia Code', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Consolas', 'monospace'],
       },
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
       },
       borderRadius: {
-        card: '8px',
+        card: '12px',
       },
       boxShadow: {
         card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 10px 24px -18px rgba(0,0,0,0.85)',

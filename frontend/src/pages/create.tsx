@@ -35,7 +35,7 @@ export default function CreatePage() {
         if (!value) return undefined;
         if (!isAddress(value)) return 'Not a valid address. Check the EIP-55 capitalisation.';
         const firstIndex = owners.findIndex((o) => o.trim().toLowerCase() === value.toLowerCase());
-        if (firstIndex !== i) return 'Duplicate — this address is already an owner.';
+        if (firstIndex !== i) return 'Duplicate: this address is already an owner.';
         return undefined;
       }),
     [owners],
@@ -86,7 +86,7 @@ export default function CreatePage() {
   return (
     <>
       <Head>
-        <title>Create a safe — ArcSafe</title>
+        <title>Create a safe | ArcSafe</title>
         <meta name="description" content="Deploy your own multi-signature safe on Arc in one transaction." />
       </Head>
 
@@ -102,7 +102,7 @@ export default function CreatePage() {
         <h1 className="text-3xl font-bold tracking-tight text-primary">Create a safe</h1>
         <p className="mt-3 max-w-xl text-base leading-relaxed text-secondary">
           Choose who controls it and how many of them must agree. The safe is deployed to your own
-          address on {ARC_TESTNET.name} — nobody else, including whoever deployed the factory, can
+          address on {ARC_TESTNET.name}. Nobody else, including whoever deployed the factory, can
           alter it.
         </p>
 

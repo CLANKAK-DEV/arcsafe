@@ -60,7 +60,7 @@ export default function AppPage() {
   return (
     <>
       <Head>
-        <title>Dashboard — ArcSafe</title>
+        <title>Dashboard | ArcSafe</title>
         <meta name="robots" content="noindex" />
       </Head>
 
@@ -429,7 +429,7 @@ function SafeDashboard({
         </ul>
         <p className="mt-4 text-xs leading-relaxed text-muted">
           Owners and the threshold can only be changed by a transaction the safe approves and
-          executes on itself — no single owner can alter this list.
+          executes on itself. No single owner can alter this list.
         </p>
       </Card>
 
@@ -564,7 +564,7 @@ function DepositCard({
     <Card title="Add funds">
       <p className="text-sm leading-relaxed text-secondary">
         Sends USDC from your connected wallet into this safe. The destination is
-        filled in from the safe you have loaded — you never copy an address.
+        filled in from the safe you have loaded, so you never copy an address.
       </p>
 
       <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-hairline bg-surface-2/60 px-3 py-2.5 text-sm">
@@ -966,7 +966,7 @@ function TxRow({
         <div className="mt-3">
           <p className="text-sm text-muted">
             Batch of <span className="tabular text-primary">{tx.callCount}</span> calls, executed
-            atomically — all succeed or none do.
+            atomically: all succeed or none do.
           </p>
           <ol className="mt-2 space-y-1.5">
             {tx.calls.map((call, i) => (
@@ -1051,7 +1051,7 @@ function TxRow({
             <div>
               <p className="inline-flex items-center gap-1.5 font-medium text-danger">
                 <AlertIcon size={14} />
-                This will fail — not sent
+                This will fail. Not sent
               </p>
               <p className="mt-1 leading-relaxed text-secondary">{sim.reason}</p>
 

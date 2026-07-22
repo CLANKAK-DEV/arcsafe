@@ -63,6 +63,26 @@ module.exports = {
       gas: 6_000_000,
     },
   },
+  // Contract verification on arcscan (a Blockscout instance). Blockscout ignores
+  // the API key, but hardhat-verify requires the field to be present.
+  etherscan: {
+    apiKey: {
+      arcTestnet: 'empty',
+    },
+    customChains: [
+      {
+        network: 'arcTestnet',
+        chainId: 5042002,
+        urls: {
+          apiURL: 'https://testnet.arcscan.app/api',
+          browserURL: 'https://testnet.arcscan.app',
+        },
+      },
+    ],
+  },
+  sourcify: {
+    enabled: false,
+  },
   gasReporter: {
     enabled: process.env.REPORT_GAS === 'true',
     currency: 'USD',

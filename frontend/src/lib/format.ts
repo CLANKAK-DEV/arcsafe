@@ -74,7 +74,7 @@ export function humanizeError(err: unknown): string {
   if (named) {
     const map: Record<string, string> = {
       NotOwner: 'That account is not an owner of this safe.',
-      OnlySafe: 'This action can only be taken by the safe itself — it must be approved as a transaction.',
+      OnlySafe: 'This action can only be taken by the safe itself. It must be approved as a transaction.',
       BelowThreshold: 'Not enough approvals yet.',
       AlreadyApproved: 'You have already approved this transaction.',
       NotApproved: 'You have not approved this transaction.',
@@ -94,7 +94,7 @@ export function humanizeError(err: unknown): string {
       // it: USDC is the native token, and transfers to the zero address, burn
       // addresses, or Circle-blocklisted addresses are rejected by the chain.
       ExecutionFailed:
-        'The safe made the call, but it reverted. If this was a plain transfer, check the destination is not blocklisted — on Arc a USDC transfer can revert even with sufficient balance.',
+        'The safe made the call, but it reverted. If this was a plain transfer, check that the destination is not blocklisted. On Arc, a USDC transfer can revert even with sufficient balance.',
       Reentrancy: 'Reentrant call blocked.',
     };
     return map[named] ?? `Rejected by the contract: ${named}`;

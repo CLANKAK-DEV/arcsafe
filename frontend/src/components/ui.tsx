@@ -23,10 +23,10 @@ const BUTTON_VARIANTS: Record<NonNullable<ButtonProps['variant']>, string> = {
 };
 
 const BUTTON_BASE =
-  'inline-flex select-none items-center justify-center rounded-lg font-medium transition active:scale-[0.985]';
+  'inline-flex select-none items-center justify-center whitespace-nowrap rounded-lg font-semibold transition duration-200 active:scale-[0.98]';
 
 function sizeClasses(size: NonNullable<ButtonProps['size']>) {
-  return size === 'sm' ? 'h-9 px-3 text-sm gap-1.5' : 'h-11 px-4 text-sm gap-2';
+  return size === 'sm' ? 'min-h-11 px-3.5 text-sm gap-1.5' : 'min-h-11 px-5 text-sm gap-2';
 }
 
 export function Button({
@@ -164,7 +164,7 @@ export function AddressChip({
         type="button"
         onClick={copy}
         aria-label={copied ? `${label ?? 'Address'} copied` : `Copy ${label ?? 'address'} ${address}`}
-        className="grid h-8 w-8 place-items-center rounded-md text-muted transition hover:bg-surface-2 hover:text-primary"
+        className="grid h-11 w-11 place-items-center rounded-lg text-muted transition hover:bg-surface-2 hover:text-primary active:scale-95"
       >
         {copied ? <CheckIcon size={15} className="text-ok" /> : <CopyIcon size={15} />}
       </button>
@@ -174,7 +174,7 @@ export function AddressChip({
           target="_blank"
           rel="noreferrer noopener"
           aria-label={`View ${label ?? 'address'} on the block explorer`}
-          className="grid h-8 w-8 place-items-center rounded-md text-muted transition hover:bg-surface-2 hover:text-primary"
+          className="grid h-11 w-11 place-items-center rounded-lg text-muted transition hover:bg-surface-2 hover:text-primary active:scale-95"
         >
           <ExternalIcon size={15} />
         </a>

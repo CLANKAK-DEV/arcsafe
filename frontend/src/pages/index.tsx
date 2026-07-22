@@ -20,7 +20,7 @@ import { QuorumNetworkVisual } from '../components/Visuals';
 import { Badge, Card, linkButtonClass } from '../components/ui';
 import { ARC_TESTNET } from '../lib/config';
 
-const TITLE = 'ArcSafe — multi-signature wallet for Arc';
+const TITLE = 'ArcSafe | multi-signature wallet for Arc';
 const DESCRIPTION =
   'N-of-M multi-signature custody for Arc Chain. Owner and threshold changes are themselves multi-sig transactions, so no single key can ever move funds alone.';
 
@@ -48,6 +48,7 @@ export default function Landing() {
 
       <main id="main">
         <Hero />
+        <ProofBand />
         <FlowSection />
         <SecuritySection />
         <FeatureSection />
@@ -66,23 +67,21 @@ export default function Landing() {
 function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
-        <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 sm:pt-20 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
           <div className="animate-fade-up">
             <Badge tone="accent" icon={<span className="h-1.5 w-1.5 rounded-full bg-accent" />}>
               {ARC_TESTNET.name} · Chain {ARC_TESTNET.chainId}
             </Badge>
 
-            <h1 className="mt-5 text-[2.5rem] font-bold leading-[1.06] tracking-tight sm:text-6xl">
+            <h1 className="mt-6 max-w-3xl text-[2.75rem] font-bold leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[4.5rem]">
               <span className="text-arch">No single key</span>
               <br />
               moves the money.
             </h1>
 
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-secondary">
-              ArcSafe is an N-of-M multi-signature wallet for Arc. Changing the owners or the
-              threshold is itself a multi-sig transaction — so a compromised owner cannot quietly
-              lower the bar and walk out with the treasury.
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-secondary">
+              Shared custody for Arc treasuries. Transfers and security changes require the quorum you define.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -95,28 +94,33 @@ function Hero() {
                 Open an existing safe
               </Link>
             </div>
-            <p className="mt-3 text-sm text-muted">
-              Free and permissionless. You choose the owners; nobody else can change them.
-            </p>
-
-            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-hairline pt-6">
-              {[
-                ['42', 'tests passing'],
-                ['32', 'calls per atomic batch'],
-                ['0', 'external dependencies'],
-              ].map(([value, label]) => (
-                <div key={label}>
-                  <dt className="sr-only">{label}</dt>
-                  <dd className="text-2xl font-semibold tabular text-primary">{value}</dd>
-                  <dd className="mt-0.5 text-xs text-muted">{label}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
           <QuorumNetworkVisual />
         </div>
       </div>
+    </section>
+  );
+}
+
+function ProofBand() {
+  const facts = [
+    ['42', 'contract tests passing'],
+    ['32', 'calls in one atomic batch'],
+    ['0', 'runtime dependencies'],
+    ['MIT', 'open-source licence'],
+  ];
+
+  return (
+    <section aria-label="Verified project facts" className="border-y border-hairline/70 bg-surface/35">
+      <dl className="mx-auto grid max-w-7xl grid-cols-2 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+        {facts.map(([value, label], index) => (
+          <div key={label} className={`py-6 ${index % 2 ? 'border-l border-hairline pl-5' : ''} lg:border-l lg:px-7 lg:first:border-l-0 lg:first:pl-0`}>
+            <dd className="text-xl font-semibold tabular text-primary">{value}</dd>
+            <dt className="mt-1 text-xs leading-relaxed text-muted">{label}</dt>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }
@@ -143,7 +147,7 @@ function HeroPanel() {
           {[
             { icon: <SendIcon size={16} />, who: 'Owner 1', what: 'proposed 5 USDC → 0x9De8…be35', tone: 'accent' as const, state: 'Proposed' },
             { icon: <CheckIcon size={16} />, who: 'Owner 2', what: 'approved · 2 of 2 reached', tone: 'ok' as const, state: 'Approved' },
-            { icon: <ClockIcon size={16} />, who: 'Owner 3', what: 'not needed — quorum already met', tone: 'neutral' as const, state: 'Idle' },
+            { icon: <ClockIcon size={16} />, who: 'Owner 3', what: 'not needed; quorum already met', tone: 'neutral' as const, state: 'Idle' },
           ].map((row) => (
             <li key={row.who} className="flex items-center gap-3 px-5 py-4">
               <span
@@ -197,27 +201,23 @@ function FlowSection() {
 
   return (
     <section id="how" className="scroll-mt-20 border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionHeading eyebrow="Flow" title="Three steps, enforced by the contract">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading title="Three steps, enforced by the contract">
           The interface never decides whether something is allowed. Every rule below is checked
           on-chain, so a modified frontend changes nothing.
         </SectionHeading>
 
-        <ol className="mt-12 grid gap-4 md:grid-cols-3">
+        <ol className="relative mt-12 grid gap-8 md:grid-cols-3 md:gap-0 before:absolute before:left-0 before:right-0 before:top-6 before:hidden before:h-px before:bg-hairline md:before:block">
           {steps.map((step, i) => (
-            <li key={step.title}>
-              <Card className="h-full">
+            <li key={step.title} className="relative md:pr-10">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-lg border border-hairline-strong bg-surface-2 text-accent">
+                  <span className="relative z-10 grid h-12 w-12 place-items-center rounded-full border border-accent/45 bg-base text-accent shadow-card">
                     {step.icon}
                   </span>
-                  <span className="text-2xs font-semibold uppercase tracking-widest text-muted">
-                    Step {i + 1}
-                  </span>
+                  <span className="font-mono text-xs text-muted">0{i + 1}</span>
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-primary">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-secondary">{step.body}</p>
-              </Card>
+                <h3 className="mt-5 text-lg font-semibold text-primary">{step.title}</h3>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-secondary">{step.body}</p>
             </li>
           ))}
         </ol>
@@ -231,9 +231,9 @@ function FlowSection() {
 function SecuritySection() {
   return (
     <section id="security" className="scroll-mt-20 border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading eyebrow="Security model" title="The rule that makes it a multi-sig">
-          A wallet where one owner can change the threshold is not a multi-sig — it is a shared hot
+          A wallet where one owner can change the threshold is not a multi-sig. It is a shared hot
           wallet with extra steps. ArcSafe separates the two capabilities explicitly.
         </SectionHeading>
 
@@ -324,7 +324,7 @@ function changeThreshold(uint256 t)
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-secondary">
             ArcSafe has a full unit-test suite but no third-party audit. Treat it as testnet
             software. The security properties described here are enforced by tests you can run
-            yourself with <code className="text-primary">npm test</code> — that is evidence, not a
+            yourself with <code className="text-primary">npm test</code>. That is evidence, not a
             substitute for review.
           </p>
         </div>
@@ -338,7 +338,7 @@ function changeThreshold(uint256 t)
 function FeatureSection() {
   const features = [
     { icon: <UsersIcon size={18} />, title: 'Owner management', body: 'Add, remove or swap owners and set a new threshold in the same approved transaction.' },
-    { icon: <LayersIcon size={18} />, title: 'Atomic batches', body: 'Bundle up to 32 calls into one proposal. Every leg succeeds or the whole batch reverts — no half-applied changes.' },
+    { icon: <LayersIcon size={18} />, title: 'Atomic batches', body: 'Bundle up to 32 calls into one proposal. Every leg succeeds or the whole batch reverts, with no half-applied changes.' },
     { icon: <ShieldCheckIcon size={18} />, title: 'Simulation before signing', body: 'Execution is dry-run against live state first. A transaction that would revert is caught and never reaches your wallet.' },
     { icon: <LayersIcon size={18} />, title: 'Arbitrary calldata', body: 'Move USDC or call any contract. The safe is a full account, not just a transfer helper.' },
     { icon: <KeyIcon size={18} />, title: 'Deterministic factory', body: 'CREATE2 addresses you can predict before paying, with salts scoped per deployer so nobody can front-run yours.' },
@@ -349,15 +349,15 @@ function FeatureSection() {
 
   return (
     <section className="border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionHeading eyebrow="Capabilities" title="What it does today">
-          Scoped deliberately. Everything listed here is implemented and covered by tests — nothing
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading title="What it does today">
+          Scoped deliberately. Everything listed here is implemented and covered by tests. Nothing
           here is a roadmap item.
         </SectionHeading>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <Card key={f.title} className="h-full">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((f, index) => (
+            <Card key={f.title} className={`h-full ${index === 0 || index === 5 ? 'lg:col-span-2 bg-gradient-to-br from-surface-2/90 to-surface/70' : ''}`}>
               <span className="grid h-9 w-9 place-items-center rounded-lg border border-hairline-strong bg-surface-2 text-accent">
                 {f.icon}
               </span>
@@ -374,40 +374,34 @@ function FeatureSection() {
 /* ── Specs ──────────────────────────────────────────────────────── */
 
 function SpecSection() {
-  const rows: Array<[string, ReactNode]> = [
-    ['Network', `${ARC_TESTNET.name} (chain ID ${ARC_TESTNET.chainId})`],
-    ['Gas token', 'USDC — Arc denominates all fees in USDC, 18 decimals natively'],
-    ['RPC endpoint', <code key="rpc">{ARC_TESTNET.rpcUrls[0]}</code>],
-    ['Language', 'Solidity 0.8.24, optimizer on, 200 runs'],
-    ['EVM target', 'Paris — Arc baselines on Osaka, so this is deliberately conservative'],
-    ['Runtime size', 'ArcSafe 9,754 bytes; factory 12,827 (limit 24,576)'],
-    ['Test suite', '42 passing, including drain, atomicity and simulation scenarios'],
-    ['Dependencies', 'None. No OpenZeppelin, no proxies, no delegatecall.'],
-    ['Licence', 'MIT'],
+  const groups: Array<{ title: string; rows: Array<[string, ReactNode]> }> = [
+    { title: 'Network', rows: [['Chain', `${ARC_TESTNET.name} (${ARC_TESTNET.chainId})`], ['Gas', 'USDC, 18 decimals'], ['RPC', <code key="rpc">{ARC_TESTNET.rpcUrls[0]}</code>]] },
+    { title: 'Contracts', rows: [['Compiler', 'Solidity 0.8.24'], ['EVM', 'Paris'], ['Runtime', '9,754 bytes']] },
+    { title: 'Assurance', rows: [['Tests', '42 passing'], ['Dependencies', 'None'], ['Licence', 'MIT']] },
   ];
 
   return (
     <section id="specs" className="scroll-mt-20 border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionHeading eyebrow="Specification" title="The details">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading title="Built to be inspected">
           Verifiable claims only. Chain ID and RPC were confirmed against a live
           <code className="mx-1 text-primary">eth_chainId</code> call, not copied from documentation.
         </SectionHeading>
 
-        <div className="mt-12 overflow-x-auto rounded-card border border-hairline">
-          <table className="w-full text-left text-sm">
-            <caption className="sr-only">ArcSafe technical specification</caption>
-            <tbody className="divide-y divide-hairline">
-              {rows.map(([label, value]) => (
-                <tr key={label} className="bg-surface/60">
-                  <th scope="row" className="w-48 px-5 py-3.5 font-medium text-muted">
-                    {label}
-                  </th>
-                  <td className="px-5 py-3.5 text-secondary">{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-12 grid gap-4 lg:grid-cols-3">
+          {groups.map((group) => (
+            <section key={group.title} className="rounded-card border border-hairline bg-surface/70 p-5 sm:p-6">
+              <h3 className="text-sm font-semibold text-primary">{group.title}</h3>
+              <dl className="mt-5 space-y-4">
+                {group.rows.map(([label, value]) => (
+                  <div key={label} className="grid gap-1 sm:grid-cols-[5rem_1fr] lg:grid-cols-1 xl:grid-cols-[5rem_1fr]">
+                    <dt className="text-xs text-muted">{label}</dt>
+                    <dd className="min-w-0 break-words text-sm text-secondary">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
         </div>
       </div>
     </section>
@@ -422,7 +416,7 @@ function RoadmapSection() {
       title: 'Highest impact',
       note: 'What unblocks the most value next.',
       items: [
-        'EIP-712 off-chain signature approvals — the biggest gap versus Safe',
+        'EIP-712 off-chain signature approvals, the biggest gap versus Safe',
         'Token pickers so transfers stop needing hand-encoded calldata',
       ],
     },
@@ -455,7 +449,7 @@ function RoadmapSection() {
 
   return (
     <section id="roadmap" className="scroll-mt-20 border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading eyebrow="Roadmap" title="What comes next">
           Nothing below is implemented. It is listed separately from the
           capabilities above so the two are never confused.
@@ -520,11 +514,11 @@ function ClosingCta() {
 
 /* ── Shared ─────────────────────────────────────────────────────── */
 
-function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: ReactNode }) {
+function SectionHeading({ eyebrow, title, children }: { eyebrow?: string; title: string; children?: ReactNode }) {
   return (
     <div className="max-w-2xl">
-      <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-primary sm:text-4xl">{title}</h2>
+      {eyebrow && <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>}
+      <h2 className={`${eyebrow ? 'mt-3' : ''} text-3xl font-bold tracking-tight text-primary sm:text-4xl`}>{title}</h2>
       {children && <p className="mt-4 text-base leading-relaxed text-secondary">{children}</p>}
     </div>
   );

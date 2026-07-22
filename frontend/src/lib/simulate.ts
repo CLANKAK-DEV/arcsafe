@@ -57,7 +57,7 @@ async function insufficientBalance(
         shortfall,
         reason:
           `The safe holds ${formatUsdc(balance)} USDC but this transaction spends ` +
-          `${formatUsdc(required)} USDC — ${formatUsdc(shortfall)} short.`,
+          `${formatUsdc(required)} USDC, ${formatUsdc(shortfall)} short.`,
       };
     }
     return null;
@@ -99,4 +99,3 @@ export async function simulateExecute(
     return { state: 'unknown', reason: humanizeError(e) };
   }
 }
-
