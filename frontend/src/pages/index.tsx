@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import {
   AlertIcon,
   ArrowRightIcon,
-  CheckIcon,
   ClockIcon,
   FileCheckIcon,
   KeyIcon,
@@ -18,7 +17,7 @@ import { NoxMark } from '../components/Logo';
 import { SiteFooter, SiteHeader } from '../components/Shell';
 import { QuorumNetworkVisual } from '../components/Visuals';
 import { Badge, Card, linkButtonClass } from '../components/ui';
-import { ARC_TESTNET } from '../lib/config';
+import { ARC_TESTNET, FACTORY_ADDRESS, FACTORY_VERSION } from '../lib/config';
 
 const TITLE = 'NoxSafe | multi-signature custody built on Arc Network';
 const DESCRIPTION =
@@ -67,11 +66,11 @@ export default function Landing() {
 function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 sm:pt-20 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
           <div className="animate-fade-up">
             <Badge tone="accent" icon={<span className="h-1.5 w-1.5 rounded-full bg-accent" />}>
-              {ARC_TESTNET.name} · Chain {ARC_TESTNET.chainId}
+              {ARC_TESTNET.name} / Chain {ARC_TESTNET.chainId}
             </Badge>
 
             <h1 className="mt-6 max-w-3xl text-[2.75rem] font-bold leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[4.5rem]">
@@ -125,59 +124,6 @@ function ProofBand() {
   );
 }
 
-function HeroPanel() {
-  return (
-    <div className="relative animate-fade-up [animation-delay:120ms]">
-      {/* Decorative halo behind the mark. */}
-      <div
-        aria-hidden="true"
-        className="absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/20 blur-3xl"
-      />
-
-      <div className="card overflow-hidden shadow-lift">
-        <div className="flex flex-col items-center gap-4 border-b border-hairline bg-gradient-to-b from-surface-2/80 to-transparent px-6 py-10">
-          <NoxMark size={76} />
-          <div className="text-center">
-            <p className="text-sm font-semibold text-primary">2 of 3 signatures required</p>
-            <p className="mt-1 text-xs text-muted">Every transfer. Every config change. No exceptions.</p>
-          </div>
-        </div>
-
-        <ul className="divide-y divide-hairline">
-          {[
-            { icon: <SendIcon size={16} />, who: 'Owner 1', what: 'proposed 5 USDC → 0x9De8…be35', tone: 'accent' as const, state: 'Proposed' },
-            { icon: <CheckIcon size={16} />, who: 'Owner 2', what: 'approved · 2 of 2 reached', tone: 'ok' as const, state: 'Approved' },
-            { icon: <ClockIcon size={16} />, who: 'Owner 3', what: 'not needed; quorum already met', tone: 'neutral' as const, state: 'Idle' },
-          ].map((row) => (
-            <li key={row.who} className="flex items-center gap-3 px-5 py-4">
-              <span
-                className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border ${
-                  row.tone === 'ok'
-                    ? 'border-ok/30 bg-ok/12 text-ok'
-                    : row.tone === 'accent'
-                      ? 'border-accent/30 bg-accent/12 text-accent'
-                      : 'border-hairline bg-surface-2 text-muted'
-                }`}
-              >
-                {row.icon}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-primary">{row.who}</p>
-                <p className="truncate text-xs text-muted">{row.what}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        <div className="flex items-center justify-between gap-3 border-t border-hairline bg-ok/8 px-5 py-4">
-          <span className="text-sm font-medium text-ok">Executed on-chain</span>
-          <CheckIcon size={18} className="text-ok" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── How it works ───────────────────────────────────────────────── */
 
 function FlowSection() {
@@ -207,17 +153,17 @@ function FlowSection() {
           on-chain, so a modified frontend changes nothing.
         </SectionHeading>
 
-        <ol className="relative mt-12 grid gap-8 md:grid-cols-3 md:gap-0 before:absolute before:left-0 before:right-0 before:top-6 before:hidden before:h-px before:bg-hairline md:before:block">
+        <ol className="mt-12 border-y border-hairline">
           {steps.map((step, i) => (
-            <li key={step.title} className="relative md:pr-10">
-                <div className="flex items-center gap-3">
-                  <span className="relative z-10 grid h-12 w-12 place-items-center rounded-full border border-accent/45 bg-base text-accent shadow-card">
+            <li key={step.title} className="grid gap-4 border-b border-hairline py-7 last:border-b-0 md:grid-cols-[5rem_12rem_1fr] md:items-center">
+                <div className="flex items-center gap-3 md:block">
+                  <span className="grid h-12 w-12 place-items-center rounded-lg border border-hairline-strong bg-surface text-accent">
                     {step.icon}
                   </span>
-                  <span className="font-mono text-xs text-muted">0{i + 1}</span>
+                  <span className="font-mono text-xs text-muted md:mt-2 md:block">0{i + 1}</span>
                 </div>
-                <h3 className="mt-5 text-lg font-semibold text-primary">{step.title}</h3>
-                <p className="mt-2 max-w-sm text-sm leading-relaxed text-secondary">{step.body}</p>
+                <h3 className="text-xl font-bold text-primary">{step.title}</h3>
+                <p className="max-w-copy text-sm leading-relaxed text-secondary">{step.body}</p>
             </li>
           ))}
         </ol>
@@ -232,7 +178,7 @@ function SecuritySection() {
   return (
     <section id="security" className="scroll-mt-20 border-t border-hairline/70 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Security model" title="The rule that makes it a multi-sig">
+        <SectionHeading title="The rule that makes it a multi-sig">
           A wallet where one owner can change the threshold is not a multi-sig. It is a shared hot
           wallet with extra steps. NoxSafe separates the two capabilities explicitly.
         </SectionHeading>
@@ -286,7 +232,7 @@ function changeThreshold(uint256 t)
           </Card>
         </div>
 
-        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
           {[
             {
               icon: <ShieldCheckIcon size={18} />,
@@ -321,7 +267,7 @@ function changeThreshold(uint256 t)
 
         <div className="mt-4 rounded-lg border border-warn/30 bg-warn/8 p-5">
           <p className="text-sm font-semibold text-warn">Not audited</p>
-          <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-secondary">
+          <p className="mt-1.5 max-w-copy text-sm leading-relaxed text-secondary">
             NoxSafe has a full unit-test suite but no third-party audit. Treat it as testnet
             software. The security properties described here are enforced by tests you can run
             yourself with <code className="text-primary">npm test</code>. That is evidence, not a
@@ -357,7 +303,7 @@ function FeatureSection() {
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, index) => (
-            <Card key={f.title} className={`h-full ${index === 0 || index === 5 ? 'lg:col-span-2 bg-gradient-to-br from-surface-2/90 to-surface/70' : ''}`}>
+            <Card key={f.title} className={`h-full ${index === 0 || index === 5 ? 'lg:col-span-2 border-hairline-strong bg-surface-2/65' : ''}`}>
               <span className="grid h-9 w-9 place-items-center rounded-lg border border-hairline-strong bg-surface-2 text-accent">
                 {f.icon}
               </span>
@@ -376,7 +322,16 @@ function FeatureSection() {
 function SpecSection() {
   const groups: Array<{ title: string; rows: Array<[string, ReactNode]> }> = [
     { title: 'Network', rows: [['Chain', `${ARC_TESTNET.name} (${ARC_TESTNET.chainId})`], ['Gas', 'USDC, 18 decimals'], ['RPC', <code key="rpc">{ARC_TESTNET.rpcUrls[0]}</code>]] },
-    { title: 'Contracts', rows: [['Compiler', 'Solidity 0.8.24'], ['EVM', 'Paris'], ['Runtime', '9,754 bytes']] },
+    {
+      title: 'Contracts',
+      rows: [
+        ['Factory', <code key="factory" title={FACTORY_ADDRESS}>{FACTORY_ADDRESS}</code>],
+        ['Version', FACTORY_VERSION],
+        ['Compiler', 'Solidity 0.8.24'],
+        ['EVM', 'Paris'],
+        ['Runtime', '9,754 bytes'],
+      ],
+    },
     { title: 'Assurance', rows: [['Tests', '43 passing'], ['Dependencies', 'None'], ['Licence', 'MIT']] },
   ];
 
@@ -450,7 +405,7 @@ function RoadmapSection() {
   return (
     <section id="roadmap" className="scroll-mt-20 border-t border-hairline/70 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Roadmap" title="What comes next">
+        <SectionHeading title="What comes next">
           Nothing below is implemented. It is listed separately from the
           capabilities above so the two are never confused.
         </SectionHeading>
@@ -477,7 +432,7 @@ function RoadmapSection() {
 
         <div className="mt-4 rounded-lg border border-warn/30 bg-warn/8 p-5">
           <p className="text-sm font-semibold text-warn">An audit comes first</p>
-          <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-secondary">
+          <p className="mt-1.5 max-w-copy text-sm leading-relaxed text-secondary">
             Every item on this list widens the attack surface. None of it should
             ship before the core contract has been reviewed by a third party.
           </p>
@@ -492,16 +447,16 @@ function RoadmapSection() {
 function ClosingCta() {
   return (
     <section className="border-t border-hairline/70 py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <NoxMark size={56} />
-        <h2 className="mt-6 text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+        <h2 className="mt-6 max-w-3xl text-3xl font-bold tracking-tight text-primary sm:text-5xl">
           Deploy one and try to break it
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-secondary">
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-secondary">
           Create a safe with your own owners, propose a transfer, and watch the contract refuse to
           execute it until a second owner signs.
         </p>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex">
           <Link href="/create/" className={linkButtonClass('primary')}>
             <ArrowRightIcon size={17} />
             Create your safe
@@ -516,7 +471,7 @@ function ClosingCta() {
 
 function SectionHeading({ eyebrow, title, children }: { eyebrow?: string; title: string; children?: ReactNode }) {
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-copy">
       {eyebrow && <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>}
       <h2 className={`${eyebrow ? 'mt-3' : ''} text-3xl font-bold tracking-tight text-primary sm:text-4xl`}>{title}</h2>
       {children && <p className="mt-4 text-base leading-relaxed text-secondary">{children}</p>}

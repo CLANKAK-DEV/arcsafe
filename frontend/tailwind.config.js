@@ -19,50 +19,54 @@ module.exports = {
     extend: {
       colors: {
         // Surfaces — the deep navy field of the mark, dark to light.
-        base: '#060D18',
-        surface: '#0C1626',
-        'surface-2': '#131F32',
-        'surface-3': '#1B2A40',
-        hairline: '#243449',
-        'hairline-strong': '#33475F',
+        base: 'var(--color-paper)',
+        surface: 'var(--color-paper-2)',
+        'surface-2': 'var(--color-paper-3)',
+        'surface-3': 'var(--color-rule)',
+        hairline: 'var(--color-rule)',
+        'hairline-strong': 'var(--color-rule-strong)',
 
         // Type — cool silver drawn from the arch, not warm cream.
-        primary: '#E9F0F8',
-        secondary: '#9BB0C7',
-        muted: '#7C90A8',
+        primary: 'var(--color-ink)',
+        secondary: 'var(--color-ink-2)',
+        muted: 'var(--color-muted)',
 
         // Brand — the arch gradient itself (#FFFFFF → #DCE7F2 → #8FA5BD).
         silver: {
-          DEFAULT: '#DCE7F2',
-          light: '#FFFFFF',
-          dark: '#8FA5BD',
+          DEFAULT: 'var(--color-ink-2)',
+          light: 'var(--color-ink)',
+          dark: 'var(--color-muted)',
         },
         // Accent — steel blue lifted from the field, not teal.
         accent: {
-          DEFAULT: '#6BA5DC',
-          strong: '#4A87C4',
-          dim: '#12314F',
+          DEFAULT: 'var(--color-accent)',
+          strong: 'var(--color-accent-strong)',
+          dim: 'var(--color-paper-3)',
         },
 
         // Semantic state — tuned to sit on navy.
-        ok: '#4FD1A0',
-        warn: '#F0B84B',
-        danger: '#F0717A',
+        ok: 'var(--color-ok)',
+        warn: 'var(--color-warn)',
+        danger: 'var(--color-danger)',
       },
       fontFamily: {
-        sans: ['Aptos', 'Segoe UI Variable', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['Cascadia Code', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Consolas', 'monospace'],
+        sans: ['var(--font-body)'],
+        display: ['var(--font-display)'],
+        mono: ['var(--font-mono)'],
       },
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
       },
       borderRadius: {
-        card: '12px',
+        card: 'var(--radius-card)',
+      },
+      maxWidth: {
+        copy: 'var(--measure-copy)',
       },
       boxShadow: {
-        card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 10px 24px -18px rgba(0,0,0,0.85)',
-        lift: '0 1px 0 0 rgba(255,255,255,0.06) inset, 0 22px 56px -28px rgba(0,0,0,0.9)',
-        glow: '0 0 0 1px rgba(107,165,220,0.35), 0 0 30px -12px rgba(107,165,220,0.45)',
+        card: 'var(--shadow-card)',
+        lift: 'var(--shadow-lift)',
+        glow: 'var(--shadow-glow)',
       },
       transitionDuration: {
         DEFAULT: '180ms',
@@ -83,8 +87,8 @@ module.exports = {
         },
         // Reached quorum: a single confirming pulse, not a loop.
         'quorum-met': {
-          '0%': { boxShadow: '0 0 0 0 rgba(79,209,160,0.5)' },
-          '100%': { boxShadow: '0 0 0 10px rgba(79,209,160,0)' },
+          '0%': { boxShadow: 'var(--shadow-quorum-start)' },
+          '100%': { boxShadow: 'var(--shadow-quorum-end)' },
         },
         'row-in': {
           from: { opacity: '0', transform: 'translate3d(0, 8px, 0)' },

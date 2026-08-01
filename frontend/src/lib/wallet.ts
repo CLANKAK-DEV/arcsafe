@@ -6,8 +6,8 @@ import { humanizeError } from './format';
 declare global {
   interface Window {
     ethereum?: Eip1193Provider & {
-      on?: (event: string, handler: (...args: any[]) => void) => void;
-      removeListener?: (event: string, handler: (...args: any[]) => void) => void;
+      on?: (event: string, handler: (...args: unknown[]) => void) => void;
+      removeListener?: (event: string, handler: (...args: unknown[]) => void) => void;
     };
   }
 }
@@ -52,12 +52,20 @@ export function useWallet(): WalletState {
     const eth = typeof window !== 'undefined' ? window.ethereum : undefined;
     if (!eth?.on) return;
 
-    const onAccounts = (accounts: string[]) => setAccount(accounts[0] ?? null);
+    const onAccounts = (...args: unknown[]) => {
+      const accounts = args[0];
+      if (Array.isArray(accounts) && accounts.every((account) => typeof account === 'string')) {
+        setAccount(accounts[0] ?? null);
+      }
+    };
     // A chain change invalidates every cached contract read, so reload rather
     // than risk showing one network's data under another network's header.
-    const onChain = (hex: string) => {
-      setChainId(Number.parseInt(hex, 16));
-      window.location.reload();
+    const onChain = (...args: unknown[]) => {
+      const hex = args[0];
+      if (typeof hex === 'string') {
+        setChainId(Number.parseInt(hex, 16));
+        window.location.reload();
+      }
     };
 
     eth.on('accountsChanged', onAccounts);

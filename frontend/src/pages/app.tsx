@@ -1,4 +1,4 @@
-import { isAddress, parseEther, ZeroAddress } from 'ethers';
+import { isAddress, parseEther, ZeroAddress, type ContractTransactionResponse } from 'ethers';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -336,7 +336,11 @@ function SafeDashboard({
   const canWrite = data.youAreOwner && wallet.onArc && !!wallet.provider;
 
   const run = useCallback(
-    async (key: string, fn: (c: Awaited<ReturnType<typeof safeWriter>>) => Promise<any>, okMessage: string) => {
+    async (
+      key: string,
+      fn: (c: Awaited<ReturnType<typeof safeWriter>>) => Promise<ContractTransactionResponse>,
+      okMessage: string,
+    ) => {
       if (!wallet.provider) return;
       setBusy(key);
       try {
@@ -786,7 +790,7 @@ function ProposeCard({
           )}
           {isBatch && (
             <span className="text-xs text-muted">
-              Total <span className="tabular text-secondary">{formatUsdc(totalValue)} USDC</span> ·
+              Total <span className="tabular text-secondary">{formatUsdc(totalValue)} USDC</span> /
               all calls succeed or none do
             </span>
           )}

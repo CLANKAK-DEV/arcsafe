@@ -1,0 +1,10 @@
+{
+  "date": "2026-08-01",
+  "framework": "Next.js 14 Pages Router",
+  "styling": "Tailwind CSS 3 plus semantic tokens",
+  "font": "Aptos and Segoe UI Variable before redesign",
+  "palette": "deep navy, cool silver, steel blue",
+  "motion": "CSS-only, reduced-motion already present",
+  "spacing": "Tailwind defaults with a 4-point intent",
+  "preserve": ["routes", "contract behavior", "wallet flows", "NoxSafe identity", "Arc framing"]
+}

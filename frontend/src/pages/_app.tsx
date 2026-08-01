@@ -1,5 +1,11 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -8,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         {/* Never disable zoom: pinch-to-zoom is an accessibility feature. */}
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#060D18" />
+        <meta name="theme-color" content="#0a111e" />
         {/* Do not leak the safe/tx path in the Referer to RPC or font hosts.
             The authoritative headers (CSP, HSTS, X-Frame-Options, nosniff) are
             set at the edge — see deploy/nginx-arcsafe.conf — because a static

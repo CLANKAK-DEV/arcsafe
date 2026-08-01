@@ -149,7 +149,7 @@ export function OperationsMap({
   ];
 
   return (
-    <div className="rounded-card border border-hairline bg-surface-2/55 p-4">
+    <div className="min-w-0 lg:border-l lg:border-hairline lg:pl-4">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {columns.map((item) => (
           <div key={item.label} className={`rounded-md border p-3 ${toneClasses(item.tone)}`}>

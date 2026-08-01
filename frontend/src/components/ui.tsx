@@ -16,14 +16,14 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const BUTTON_VARIANTS: Record<NonNullable<ButtonProps['variant']>, string> = {
   primary:
-    'bg-gradient-to-b from-accent to-accent-strong text-base hover:from-accent hover:to-accent shadow-card',
+    'bg-primary text-base border border-primary hover:bg-silver shadow-card',
   secondary: 'bg-surface-2 text-primary border border-hairline-strong hover:bg-surface-3',
   ghost: 'text-secondary hover:text-primary hover:bg-surface-2',
   danger: 'bg-danger/12 text-danger border border-danger/35 hover:bg-danger/20',
 };
 
 const BUTTON_BASE =
-  'inline-flex select-none items-center justify-center whitespace-nowrap rounded-lg font-semibold transition duration-200 active:scale-[0.98]';
+  'inline-flex select-none items-center justify-center whitespace-nowrap rounded-lg font-semibold transition-colors duration-200 active:translate-y-px';
 
 function sizeClasses(size: NonNullable<ButtonProps['size']>) {
   return size === 'sm' ? 'min-h-11 px-3.5 text-sm gap-1.5' : 'min-h-11 px-5 text-sm gap-2';
@@ -46,7 +46,7 @@ export function Button({
       // aria-busy tells assistive tech the control is working, not broken.
       aria-busy={loading || undefined}
       disabled={disabled || loading}
-      className={`${BUTTON_BASE} disabled:pointer-events-none disabled:opacity-45
+      className={`${BUTTON_BASE} disabled:cursor-not-allowed disabled:opacity-50
         ${sizing} ${BUTTON_VARIANTS[variant]} ${className}`}
       {...rest}
     >
@@ -213,22 +213,24 @@ export function Field({ label, hint, error, mono, className = '', ...rest }: Fie
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errId : hint ? hintId : undefined}
-        className={`h-11 w-full rounded-lg border bg-surface-2 px-3 text-sm text-primary
-          placeholder:text-muted/70 transition
-          ${error ? 'border-danger/60' : 'border-hairline focus:border-accent/60'}
-          ${mono ? 'font-mono' : ''} ${className}`}
+        className={`h-11 w-full rounded-lg border bg-surface-2 px-3 pr-9 text-sm text-primary outline outline-2 outline-transparent outline-offset-1
+          placeholder:text-muted transition-colors
+          ${error ? 'border-danger' : 'border-hairline hover:bg-surface-3 focus-visible:border-hairline-strong'}
+          disabled:cursor-not-allowed disabled:opacity-50 ${mono ? 'font-mono' : ''} ${className}`}
         {...rest}
       />
-      {error ? (
-        // role=alert so the message is announced when it appears.
-        <p id={errId} role="alert" className="flex items-start gap-1 text-xs text-danger">
-          {error}
-        </p>
-      ) : hint ? (
-        <p id={hintId} className="text-xs text-muted">
-          {hint}
-        </p>
-      ) : null}
+      <div className="min-h-5">
+        {error ? (
+          // role=alert so the message is announced when it appears.
+          <p id={errId} role="alert" className="flex items-start gap-1 text-xs text-danger">
+            {error}
+          </p>
+        ) : hint ? (
+          <p id={hintId} className="text-xs text-muted">
+            {hint}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

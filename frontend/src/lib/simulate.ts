@@ -1,4 +1,4 @@
-import { Contract, JsonRpcProvider, type BrowserProvider } from 'ethers';
+import { Contract, JsonRpcProvider } from 'ethers';
 import { NOXSAFE_ABI, ARC_TESTNET } from './config';
 import { formatUsdc, humanizeError } from './format';
 
