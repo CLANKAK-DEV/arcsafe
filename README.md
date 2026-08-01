@@ -4,12 +4,12 @@
 
 **Independent N-of-M multi-signature custody, built on Arc Network.**
 
-A [SoftNox](https://arcsafe.vercel.app) product.
+A [SoftNox](https://noxsafe-softnox.vercel.app) product.
 
 Changing the owner set or the signature threshold is itself a multi-sig
 transaction. No single owner can lower the bar and move funds alone.
 
-[**Live app**](https://arcsafe.vercel.app) · [Documentation](DOCUMENTATION.md) · [Security audit](security-report.md)
+[**Live app**](https://noxsafe-softnox.vercel.app) · [Documentation](DOCUMENTATION.md) · [Security audit](security-report.md)
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Tests](https://img.shields.io/badge/tests-43%20passing-brightgreen)
@@ -25,7 +25,7 @@ transaction. No single owner can lower the bar and move funds alone.
 >
 > | | |
 > |---|---|
-> | Live app | **https://arcsafe.vercel.app** |
+> | Live app | **https://noxsafe-softnox.vercel.app** |
 > | `NoxSafeFactory` | Read from the [verified deployment registry](frontend/src/deployments/arc-testnet.json) |
 > | Verification | `npm run verify:factory` checks the chain, interface, and exact runtime code hash |
 > | Tests | 43 passing · internal audit: 0 Critical |

@@ -6,7 +6,7 @@ Independent N-of-M multi-signature custody, built on **Arc Network**.
 >
 > | | |
 > |---|---|
-> | Live app | **https://arcsafe.vercel.app** (HTTPS, security headers, hosted on Vercel) |
+> | Live app | **https://noxsafe-softnox.vercel.app** (HTTPS, security headers, hosted on Vercel) |
 > | `NoxSafeFactory` | [`0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab`](https://testnet.arcscan.app/address/0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab) |
 > | Network | Arc Testnet, chain ID `5042002` |
 > | Verified | 12,907 bytes; runtime hash pinned in `frontend/src/deployments/arc-testnet.json` |
@@ -685,7 +685,7 @@ Every item below was found by running the real thing, not by reading code.
 
 Also this cycle: the UI was rethemed to the logo palette (navy + metallic
 silver), and the frontend was deployed to production on Vercel at
-**https://arcsafe.vercel.app** with HTTPS and full security headers.
+**https://noxsafe-softnox.vercel.app** with HTTPS and full security headers.
 
 ---
 
@@ -713,7 +713,7 @@ Re-run the checks yourself:
 ```bash
 npm test               # 43 passing
 npm run check:secrets  # no key outside .env
-curl -sI https://arcsafe.vercel.app/ | grep -i content-security-policy
+curl -sI https://noxsafe-softnox.vercel.app/ | grep -i content-security-policy
 ```
 
 ---
