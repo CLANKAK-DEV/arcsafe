@@ -142,6 +142,18 @@ The deployment command updates the versioned registry automatically. Confirm the
 npm run verify:factory
 ```
 
+### Current verified Arc Testnet deployment
+
+| Role | Address | Purpose |
+|---|---|---|
+| Deployer EOA | [`0x773FAFaFcd47E85F4AE2440a46c4281733FADdfe`](https://testnet.arcscan.app/address/0x773FAFaFcd47E85F4AE2440a46c4281733FADdfe) | Submitted the deployment transaction only; it has no factory admin role or authority over user safes. |
+| `NoxSafeFactory` v1 | [`0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab`](https://testnet.arcscan.app/address/0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab#code) | Permissionless, source-verified CREATE2 factory that deploys quorum-controlled NoxSafe accounts and indexes them by owner. |
+| Deployment transaction | [`0xa77099e9…e78f996`](https://testnet.arcscan.app/tx/0xa77099e9a75e16ddf5c7ca1343234a6d1d2122d9729093ca26396c230e78f996) | Successful factory creation at block `54802455`. |
+
+Arcscan source verification and the registry's exact runtime-code hash were
+reconfirmed on 2026-08-01. No canonical demo safe is deployed; users create
+their own safes through the factory.
+
 ### Read this before deploying
 
 The previous deployment attempt **reverted and was reported as successful.**

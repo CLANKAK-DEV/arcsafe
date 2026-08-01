@@ -20,6 +20,7 @@ const basePath = process.env.BASE_PATH ?? (process.env.VERCEL ? '' : '/arcsafe')
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
+  outputFileTracingRoot: __dirname,
   poweredByHeader: false,
   trailingSlash: true,
   basePath,
