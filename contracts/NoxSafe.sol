@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-/// @title  ArcSafe — Multi-Signature Wallet for Arc Chain
-/// @notice N-of-M multi-sig. Owner-set and threshold changes are themselves
+/// @title  NoxSafe - Multi-Signature Wallet
+/// @notice Independent multi-signature custody deployed on Arc Network.
+/// @dev N-of-M multi-sig. Owner-set and threshold changes are themselves
 ///         multi-sig transactions: no single owner can ever act alone.
 /// @dev    Authorization model
 ///         ─────────────────────────────────────────────────────────────
@@ -13,7 +14,7 @@ pragma solidity 0.8.24;
 ///         This is the property that makes the wallet a multi-sig rather than
 ///         a shared hot wallet. An `onlyOwner` guard on changeThreshold would
 ///         let one owner set the threshold to 1 and drain the safe.
-contract ArcSafe {
+contract NoxSafe {
     // ─── Errors ───────────────────────────────────────────────────────
     error NotOwner();
     error OnlySafe();

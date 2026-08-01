@@ -1,5 +1,5 @@
 import { Contract, JsonRpcProvider, type BrowserProvider } from 'ethers';
-import { ARCSAFE_ABI, ARC_TESTNET } from './config';
+import { NOXSAFE_ABI, ARC_TESTNET } from './config';
 import { formatUsdc, humanizeError } from './format';
 
 const reader = new JsonRpcProvider(ARC_TESTNET.rpcUrls[0], ARC_TESTNET.chainId, {
@@ -71,7 +71,7 @@ export async function simulateExecute(
   txId: number,
   from: string,
 ): Promise<Simulation> {
-  const safe = new Contract(safeAddress, ARCSAFE_ABI, reader);
+  const safe = new Contract(safeAddress, NOXSAFE_ABI, reader);
 
   try {
     await safe.execute.staticCall(txId, { from });

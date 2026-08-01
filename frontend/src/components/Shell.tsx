@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { ReactNode } from 'react';
 import { ARC_TESTNET } from '../lib/config';
-import { ArcSafeLogo } from './Logo';
+import { NoxSafeLogo } from './Logo';
 
 const NAV = [
   { href: '/#how', label: 'How it works' },
@@ -18,8 +18,8 @@ export function SiteHeader({ right }: { right?: ReactNode }) {
   return (
     <header className="sticky top-0 z-40 border-b border-hairline/70 bg-base/90 backdrop-blur-xl">
       <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="rounded-lg" aria-label="ArcSafe home">
-          <ArcSafeLogo size={30} />
+        <Link href="/" className="rounded-lg" aria-label="NoxSafe home">
+          <NoxSafeLogo size={30} />
         </Link>
 
         {!onApp && (
@@ -65,9 +65,9 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-hairline/70">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between lg:px-8">
         <div className="max-w-sm space-y-3">
-          <ArcSafeLogo size={28} />
+          <NoxSafeLogo size={28} />
           <p className="text-sm leading-relaxed text-muted">
-            An N-of-M multi-signature wallet for Arc. Open source, unaudited, and running on testnet only.
+            Independent N-of-M multi-signature custody built on Arc Network. Open source, unaudited, and testnet only.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export function SiteFooter() {
       <div className="border-t border-hairline/70">
         <div className="mx-auto flex max-w-7xl flex-col gap-1.5 px-4 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>Testnet software. Not audited. Do not custody assets of real value.</p>
-          <p>© {new Date().getFullYear()} SoftNox · ArcSafe</p>
+          <p>© {new Date().getFullYear()} SoftNox · NoxSafe</p>
         </div>
       </div>
     </footer>

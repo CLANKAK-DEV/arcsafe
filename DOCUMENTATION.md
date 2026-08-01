@@ -1,16 +1,15 @@
-# ArcSafe — Full Documentation
+# NoxSafe — Full Documentation
 
-An N-of-M multi-signature wallet for **Arc**, Circle's chain for onchain finance
-with stablecoins.
+Independent N-of-M multi-signature custody, built on **Arc Network**.
 
 > **Status: live on Arc Testnet. Unaudited. Do not custody real value.**
 >
 > | | |
 > |---|---|
 > | Live app | **https://arcsafe.vercel.app** (HTTPS, security headers, hosted on Vercel) |
-> | `ArcSafeFactory` | [`0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03`](https://testnet.arcscan.app/address/0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03) |
+> | `NoxSafeFactory` | [`0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab`](https://testnet.arcscan.app/address/0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab) |
 > | Network | Arc Testnet, chain ID `5042002` |
-> | Verified | 12,827 bytes on-chain, byte-for-byte identical to this repo's build |
+> | Verified | 12,907 bytes; runtime hash pinned in `deployments/arc-testnet.json` |
 > | Tests | 43 passing |
 > | Security | Internal audit complete — 0 Critical, see [§14](#14-security-audit) and `security-report.md` |
 
@@ -84,11 +83,11 @@ frontend changes nothing.
 
 | Contract | Role | Deployed |
 |---|---|---|
-| `ArcSafeFactory` | Public infrastructure. Creates safes, indexes them by owner. No owner, no admin functions, no upgrade path. | **Once**, by anyone |
-| `ArcSafe` | One per safe. Holds the funds, enforces the quorum. | Per user, via the factory |
+| `NoxSafeFactory` | Public infrastructure. Creates safes, indexes them by owner. No owner, no admin functions, no upgrade path. | **Once**, by anyone |
+| `NoxSafe` | One per safe. Holds the funds, enforces the quorum. | Per user, via the factory |
 
 ```
-you:    deploy ArcSafeFactory ──┐
+you:    deploy NoxSafeFactory ──┐
                                 ├──► anyone creates their own safe
 users:  /create → own owners  ──┘
 ```
@@ -167,7 +166,7 @@ flows into the safe**, and the threshold check is untouched. Two tests pin this:
 
 ## 4. Contract reference
 
-### `ArcSafe`
+### `NoxSafe`
 
 #### Proposal lifecycle
 
@@ -255,7 +254,7 @@ ABI** or ethers reports the useless `execution reverted (unknown custom error)`.
 `Cancelled`, `OwnerAdded`, `OwnerRemoved`, `OwnerSwapped`, `ThresholdChanged`,
 `ConfigVersionBumped`.
 
-### `ArcSafeFactory`
+### `NoxSafeFactory`
 
 | Function | Notes |
 |---|---|
@@ -291,7 +290,7 @@ frontend/src/
 │   ├── format.ts      USDC formatting, error humanising
 │   └── useMounted.ts  hydration guard for wallet-dependent pages
 └── components/
-    ├── Logo.tsx       Arc mark, drawn as vector
+    ├── Logo.tsx       NoxSafe product mark, drawn as vector
     ├── Icons.tsx      SVG icon set — no emoji
     ├── ui.tsx         Button, Card, Field, Badge, Callout, Stat
     ├── Visuals.tsx    quorum diagram, threshold preview
@@ -304,10 +303,10 @@ frontend/
 └── ../deploy/nginx-arcsafe.conf   equivalent headers for a VPS
 ```
 
-### Design system — derived from the mark
+### NoxSafe design system
 
-The palette is taken directly from the Arc logo: a silver-to-white arch on a
-deep navy field. Every component references a **semantic token**
+The palette belongs to NoxSafe's independent product identity: cool silver and
+steel blue on a deep navy field. Every component references a **semantic token**
 (`bg-surface`, `text-secondary`, `text-accent`), never a raw hex, so a retheme
 is a single change in `tailwind.config.js`.
 
@@ -321,7 +320,7 @@ is a single change in `tailwind.config.js`.
 
 All type/accent pairs are WCAG-AA verified against the navy base (ratios noted
 in `tailwind.config.js`). The `.text-arch` headline uses a narrow near-white
-gradient clipped to the text for the logo's metallic sheen, with a solid
+gradient clipped to the text for a restrained metallic sheen, with a solid
 fallback for forced-colours and print.
 
 ### Design decisions worth knowing
@@ -372,7 +371,6 @@ DEPLOY_DEMO_SAFE=false
 `frontend/.env.local` (**public** — baked into the bundle, addresses only):
 
 ```ini
-NEXT_PUBLIC_FACTORY_ADDRESS=0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03
 NEXT_PUBLIC_SAFE_ADDRESS=
 BASE_PATH=/arcsafe
 ```
@@ -393,7 +391,8 @@ own:
 
 ```bash
 npm run deploy:testnet
-SAFE=0x... npm run verify:deployment    # independent check
+npm run verify:factory                 # exact address, interface, and code hash
+SAFE=0x... npm run verify:safe          # optional safe-instance check
 ```
 
 The script estimates gas up front, then re-reads `eth_getCode` after deploying
@@ -419,17 +418,17 @@ Current sizes:
 
 | | Runtime | Deploy gas |
 |---|---|---|
-| `ArcSafe` | 9,754 bytes | — |
-| `ArcSafeFactory` | 12,827 bytes | 2,821,827 |
+| `NoxSafe` | 9,754 bytes | — |
+| `NoxSafeFactory` | 12,907 bytes | 2,839,051 |
 
-The factory embeds ArcSafe's creation code, which is why it is larger. Note it
+The factory embeds NoxSafe's creation code, which is why it is larger. Note it
 needs ~2.82M gas — **the original 2,000,000 limit would have failed here too.**
 Configured limit is 6,000,000. EIP-170 caps runtime at 24,576 bytes.
 
 ### Hosting the frontend
 
-The interface is a static export — it holds **no secrets** (only the public
-`NEXT_PUBLIC_FACTORY_ADDRESS` is baked in), so it can be served anywhere. Two
+The interface is a static export — it holds **no secrets**. The public factory
+is pinned in the committed deployment registry, so it can be served anywhere. Two
 supported targets:
 
 **Vercel (current live deployment — recommended).** Free HTTPS + HSTS, and the
@@ -440,11 +439,11 @@ uploaded). Security headers come from `frontend/vercel.json`.
 ```bash
 cd frontend
 vercel                # first run: log in, links the project
-vercel --prod --yes -b NEXT_PUBLIC_FACTORY_ADDRESS=0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03
+vercel --prod --yes
 ```
 
-- Set `NEXT_PUBLIC_FACTORY_ADDRESS` in Vercel's project env (or pass it with
-  `-b` as above) — `.env.local` is not uploaded.
+- Do not set `NEXT_PUBLIC_FACTORY_ADDRESS`; the frontend rejects overrides that
+  disagree with `deployments/arc-testnet.json`.
 - **Never** put `PRIVATE_KEY` in Vercel. The frontend does not use it.
 - Leave `BASE_PATH` unset so the app serves at root.
 
@@ -558,7 +557,7 @@ npm run coverage
 | `batch transactions` | Atomicity, simulation, tuple encoding, bounds |
 | `configuration through the multi-sig` | Owner changes, stale invalidation |
 | `reentrancy` | Hostile owner contract re-entering on payout |
-| `ArcSafeFactory` | CREATE2, indexing, salt scoping, deployer has no authority, duplicate-deploy reverts `SafeAlreadyExists` |
+| `NoxSafeFactory` | CREATE2, indexing, salt scoping, deployer has no authority, duplicate-deploy reverts `SafeAlreadyExists` |
 
 Two tests are worth singling out:
 
@@ -725,4 +724,4 @@ MIT © SoftNox.
 
 **Testnet software. Not audited. Do not custody assets of real value.**
 
-*ArcSafe is a product of SoftNox.*
+*NoxSafe is a product of SoftNox.*

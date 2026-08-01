@@ -33,7 +33,7 @@ export function QuorumNetworkVisual() {
         <svg
           viewBox="0 0 100 100"
           role="img"
-          aria-label="Two owner approvals flow into the ArcSafe before execution is enabled."
+          aria-label="Two owner approvals flow into the NoxSafe before execution is enabled."
           className="mx-auto aspect-square w-full max-w-[360px]"
         >
           <path d="M18 28 C32 45 39 48 50 54" className="stroke-ok" strokeWidth="1.4" fill="none" />

@@ -1,4 +1,4 @@
-ArcSafe — security-fixes.patch
+NoxSafe — security-fixes.patch
 Remediation pass 2026-07-20. Maps to security-report.md §9.
 
 NOTE: the working tree is NOT under version control (no .git), so this is a
@@ -10,8 +10,8 @@ git, `git diff` will reproduce these same hunks.
 SEC-004 — CREATE2 collision now reverts with a named, decodable error
 ================================================================================
 
---- contracts/ArcSafeFactory.sol  (createSafe)
-    Added, after computing scopedSalt and before `new ArcSafe{salt}`:
+--- contracts/NoxSafeFactory.sol  (createSafe)
+    Added, after computing scopedSalt and before `new NoxSafe{salt}`:
 
 +       // Fail with a named error the UI can explain when this exact
 +       // (deployer, salt, owners, threshold) tuple was already deployed.
@@ -19,13 +19,13 @@ SEC-004 — CREATE2 collision now reverts with a named, decodable error
 +       address predicted = _predict(scopedSalt, owners, threshold);
 +       if (predicted.code.length != 0) revert SafeAlreadyExists();
 
---- contracts/ArcSafeFactory.sol  (predictAddress -> shared _predict helper)
+--- contracts/NoxSafeFactory.sol  (predictAddress -> shared _predict helper)
     predictAddress now delegates the CREATE2 math to a private _predict() so the
     collision guard and the public predictor can never diverge:
 
 -   function predictAddress(...) external view returns (address) {
 -       bytes32 scopedSalt = keccak256(abi.encodePacked(deployer, salt));
--       bytes32 initCodeHash = keccak256(abi.encodePacked(type(ArcSafe).creationCode, abi.encode(owners, threshold)));
+-       bytes32 initCodeHash = keccak256(abi.encodePacked(type(NoxSafe).creationCode, abi.encode(owners, threshold)));
 -       return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), scopedSalt, initCodeHash)))));
 -   }
 +   function predictAddress(...) external view returns (address) {
@@ -35,7 +35,7 @@ SEC-004 — CREATE2 collision now reverts with a named, decodable error
 +   function _predict(bytes32 scopedSalt, address[] calldata owners, uint256 threshold)
 +       private view returns (address)
 +   {
-+       bytes32 initCodeHash = keccak256(abi.encodePacked(type(ArcSafe).creationCode, abi.encode(owners, threshold)));
++       bytes32 initCodeHash = keccak256(abi.encodePacked(type(NoxSafe).creationCode, abi.encode(owners, threshold)));
 +       return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), scopedSalt, initCodeHash)))));
 +   }
 
@@ -51,14 +51,14 @@ SEC-004 — CREATE2 collision now reverts with a named, decodable error
 +   SafeAlreadyExists: 'A safe with these exact owners and threshold already exists at this address. Change the owners or threshold, or try again to get a fresh address.',
 +   NoOwners: 'A safe needs at least one owner.',
 
---- test/ArcSafe.test.js  (ArcSafeFactory describe block)
+--- test/NoxSafe.test.js  (NoxSafeFactory describe block)
     Added regression test:
     "rejects a repeat deployment with a named error instead of an opaque revert"
     Asserts a duplicate createSafe reverts with SafeAlreadyExists and leaves the
     index untouched. Suite: 42 -> 43 passing.
 
   ON-CHAIN NOTE: this changes factory bytecode. Redeploy the factory to carry
-  the fix on-chain; existing safes are unaffected (ArcSafe bytecode unchanged,
+  the fix on-chain; existing safes are unaffected (NoxSafe bytecode unchanged,
   so predicted safe addresses are stable).
 
 ================================================================================

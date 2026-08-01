@@ -56,7 +56,7 @@ export function formatRelativeTime(unixSeconds: number, now = Date.now()): strin
 
 /**
  * Turns an ethers/MetaMask error into something a person can act on.
- * Custom errors from ArcSafe arrive as `error.revert.name`.
+ * Custom errors from NoxSafe arrive as `error.revert.name`.
  */
 export function humanizeError(err: unknown): string {
   const e = err as {

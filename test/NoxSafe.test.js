@@ -5,13 +5,13 @@ const { anyValue } = require('@nomicfoundation/hardhat-chai-matchers/withArgs');
 
 const ONE = ethers.parseEther('1');
 
-describe('ArcSafe', function () {
+describe('NoxSafe', function () {
   async function deploy2of3() {
     const [alice, bob, carol, mallory, recipient] = await ethers.getSigners();
     const owners = [alice.address, bob.address, carol.address];
 
-    const ArcSafe = await ethers.getContractFactory('ArcSafe');
-    const safe = await ArcSafe.deploy(owners, 2);
+    const NoxSafe = await ethers.getContractFactory('NoxSafe');
+    const safe = await NoxSafe.deploy(owners, 2);
     await safe.waitForDeployment();
 
     // Fund the safe with 10 ARC.
@@ -44,33 +44,33 @@ describe('ArcSafe', function () {
 
     it('rejects a threshold above the owner count', async function () {
       const [a, b] = await ethers.getSigners();
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      await expect(ArcSafe.deploy([a.address, b.address], 3)).to.be.revertedWithCustomError(
-        ArcSafe,
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      await expect(NoxSafe.deploy([a.address, b.address], 3)).to.be.revertedWithCustomError(
+        NoxSafe,
         'InvalidThreshold',
       );
     });
 
     it('rejects a zero threshold', async function () {
       const [a] = await ethers.getSigners();
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      await expect(ArcSafe.deploy([a.address], 0)).to.be.revertedWithCustomError(ArcSafe, 'InvalidThreshold');
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      await expect(NoxSafe.deploy([a.address], 0)).to.be.revertedWithCustomError(NoxSafe, 'InvalidThreshold');
     });
 
     it('rejects duplicate owners', async function () {
       const [a] = await ethers.getSigners();
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      await expect(ArcSafe.deploy([a.address, a.address], 1)).to.be.revertedWithCustomError(
-        ArcSafe,
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      await expect(NoxSafe.deploy([a.address, a.address], 1)).to.be.revertedWithCustomError(
+        NoxSafe,
         'DuplicateOwner',
       );
     });
 
     it('rejects the zero address as owner', async function () {
       const [a] = await ethers.getSigners();
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      await expect(ArcSafe.deploy([a.address, ethers.ZeroAddress], 1)).to.be.revertedWithCustomError(
-        ArcSafe,
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      await expect(NoxSafe.deploy([a.address, ethers.ZeroAddress], 1)).to.be.revertedWithCustomError(
+        NoxSafe,
         'InvalidOwner',
       );
     });
@@ -236,8 +236,8 @@ describe('ArcSafe', function () {
   describe('funding on execute', function () {
     async function emptySafe() {
       const [alice, bob, carol, mallory, recipient] = await ethers.getSigners();
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      const safe = await ArcSafe.deploy([alice.address, bob.address, carol.address], 2);
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      const safe = await NoxSafe.deploy([alice.address, bob.address, carol.address], 2);
       await safe.waitForDeployment();
       return { safe, alice, bob, recipient, mallory };
     }
@@ -613,8 +613,8 @@ describe('ArcSafe', function () {
 
       // Make the attacker contract a genuine owner so its re-entrant call gets
       // past onlyOwner and reaches the guard.
-      const ArcSafe = await ethers.getContractFactory('ArcSafe');
-      const safe = await ArcSafe.deploy([alice.address, bob.address, attackerAddress], 2);
+      const NoxSafe = await ethers.getContractFactory('NoxSafe');
+      const safe = await NoxSafe.deploy([alice.address, bob.address, attackerAddress], 2);
       await safe.waitForDeployment();
       await alice.sendTransaction({ to: await safe.getAddress(), value: ethers.parseEther('5') });
 
@@ -634,10 +634,10 @@ describe('ArcSafe', function () {
   });
 
   // ───────────────────────────────────────────────────────────────────
-  describe('ArcSafeFactory', function () {
+  describe('NoxSafeFactory', function () {
     it('deploys a working safe and indexes it by owner', async function () {
       const [alice, bob, carol] = await ethers.getSigners();
-      const Factory = await ethers.getContractFactory('ArcSafeFactory');
+      const Factory = await ethers.getContractFactory('NoxSafeFactory');
       const factory = await Factory.deploy();
       await factory.waitForDeployment();
 
@@ -651,7 +651,7 @@ describe('ArcSafe', function () {
       expect(await factory.safesOf(alice.address)).to.deep.equal([predicted]);
       expect(await factory.safeCount()).to.equal(1);
 
-      const safe = await ethers.getContractAt('ArcSafe', predicted);
+      const safe = await ethers.getContractAt('NoxSafe', predicted);
       expect(await safe.threshold()).to.equal(2);
       expect(await safe.getOwners()).to.deep.equal(owners);
     });
@@ -661,7 +661,7 @@ describe('ArcSafe', function () {
       // unrelated users create their own safes through it.
       const [factoryDeployer, alice, bob, recipient] = await ethers.getSigners();
 
-      const Factory = await ethers.getContractFactory('ArcSafeFactory');
+      const Factory = await ethers.getContractFactory('NoxSafeFactory');
       const factory = await Factory.connect(factoryDeployer).deploy();
       await factory.waitForDeployment();
 
@@ -671,7 +671,7 @@ describe('ArcSafe', function () {
       const predicted = await factory.predictAddress(alice.address, owners, 2, salt);
       await factory.connect(alice).createSafe(owners, 2, salt);
 
-      const safe = await ethers.getContractAt('ArcSafe', predicted);
+      const safe = await ethers.getContractAt('NoxSafe', predicted);
       await alice.sendTransaction({ to: predicted, value: ethers.parseEther('5') });
 
       // The factory deployer is not an owner and cannot act.
@@ -700,7 +700,7 @@ describe('ArcSafe', function () {
 
     it('scopes salts per deployer so addresses cannot be front-run', async function () {
       const [alice, bob] = await ethers.getSigners();
-      const Factory = await ethers.getContractFactory('ArcSafeFactory');
+      const Factory = await ethers.getContractFactory('NoxSafeFactory');
       const factory = await Factory.deploy();
       await factory.waitForDeployment();
 
@@ -715,7 +715,7 @@ describe('ArcSafe', function () {
 
     it('rejects a repeat deployment with a named error instead of an opaque revert', async function () {
       const [alice, bob] = await ethers.getSigners();
-      const Factory = await ethers.getContractFactory('ArcSafeFactory');
+      const Factory = await ethers.getContractFactory('NoxSafeFactory');
       const factory = await Factory.deploy();
       await factory.waitForDeployment();
 

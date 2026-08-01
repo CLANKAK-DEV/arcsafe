@@ -1,8 +1,8 @@
 <div align="center">
 
-# ArcSafe
+# NoxSafe
 
-**An N-of-M multi-signature wallet for Arc — Circle's stablecoin chain.**
+**Independent N-of-M multi-signature custody, built on Arc Network.**
 
 A [SoftNox](https://arcsafe.vercel.app) product.
 
@@ -26,9 +26,8 @@ transaction. No single owner can lower the bar and move funds alone.
 > | | |
 > |---|---|
 > | Live app | **https://arcsafe.vercel.app** |
-> | `ArcSafeFactory` | [`0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03`](https://testnet.arcscan.app/address/0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03) |
-> | Deployed | 2026-07-19, 2,821,827 gas |
-> | Verified | `eth_getCode` returns 12,827 bytes, byte-for-byte identical to this repo's build |
+> | `NoxSafeFactory` | Read from [`deployments/arc-testnet.json`](deployments/arc-testnet.json) |
+> | Verification | `npm run verify:factory` checks the chain, interface, and exact runtime code hash |
 > | Tests | 43 passing · internal audit: 0 Critical |
 >
 > Anyone can create their own safe through that factory. It has no owner and no
@@ -50,7 +49,7 @@ function changeThreshold(uint256 t) external onlyOwner {
 call `changeThreshold(1)`, propose a transfer of the whole balance, approve it
 themselves, and execute. The "2 of 3" is decorative.
 
-ArcSafe splits the two capabilities:
+NoxSafe splits the two capabilities:
 
 | Guard | Who passes it | What it protects |
 |---|---|---|
@@ -97,14 +96,14 @@ npm run dev       # http://localhost:3000/arcsafe/
 
 ```
 contracts/
-  ArcSafe.sol            core wallet
-  ArcSafeFactory.sol     CREATE2 deployer + per-owner index
+  NoxSafe.sol            core wallet
+  NoxSafeFactory.sol     CREATE2 deployer + per-owner index
   test/Reenterer.sol     hostile contract used by the reentrancy test
 scripts/
   deploy.js              deploys, then verifies bytecode actually landed
   verify-deployment.js   independently check any address
 test/
-  ArcSafe.test.js        43 tests
+  NoxSafe.test.js        43 tests
 frontend/                Next.js static export
   legacy/index.html      the previous single-file UI, kept for reference
 ```
@@ -113,11 +112,11 @@ frontend/                Next.js static export
 
 ## How it is used
 
-ArcSafe is permissionless. You deploy **one factory**, once. After that anyone
+NoxSafe is permissionless. You deploy **one factory**, once. After that anyone
 creates their own safe from the web UI, choosing their own owners.
 
 ```
-you:   deploy ArcSafeFactory  ──┐
+you:   deploy NoxSafeFactory  ──┐
                                 ├─► users create their own safes through it
 anyone: /create → own owners  ──┘
 ```
@@ -137,10 +136,10 @@ No user's address needs to appear anywhere in this repo.
 npm run deploy:testnet
 ```
 
-Copy the printed `NEXT_PUBLIC_FACTORY_ADDRESS` into `frontend/.env.local`, rebuild the frontend, and confirm independently:
+The deployment command updates the versioned registry automatically. Confirm the address and exact runtime code independently:
 
 ```bash
-SAFE=0x... npm run verify:deployment
+npm run verify:factory
 ```
 
 ### Read this before deploying
@@ -175,10 +174,10 @@ Current sizes, measured at the live deployment:
 
 | | Runtime | Code deposit | Deploy estimate |
 |---|---|---|---|
-| `ArcSafe` | 9,754 bytes | 1.95M gas | — |
-| `ArcSafeFactory` | 12,827 bytes | 2.57M gas | **2,821,827 gas actual** |
+| `NoxSafe` | 9,754 bytes | 1.95M gas | — |
+| `NoxSafeFactory` | 12,907 bytes | 2.58M gas | **2,839,051 gas actual** |
 
-The factory embeds ArcSafe's creation code, which is why it is the larger of
+The factory embeds NoxSafe's creation code, which is why it is the larger of
 the two and the one that actually gets deployed. Note it needs ~2.84M gas —
 **the original 2,000,000 limit would have failed here too.** The configured
 limit is 6,000,000, and both contracts are far below the 24,576-byte EIP-170
@@ -186,8 +185,8 @@ cap.
 
 ### Hosting the frontend
 
-The interface is a static export holding **no secrets** (only the public
-`NEXT_PUBLIC_FACTORY_ADDRESS` is baked in), so it can be served anywhere.
+The interface is a static export holding **no secrets**. Its public factory is
+pinned by address and runtime code hash in `deployments/arc-testnet.json`.
 
 **Vercel (current live host — recommended).** Free HTTPS + HSTS, and the app
 serves at the domain root automatically. Security headers come from
@@ -195,7 +194,7 @@ serves at the domain root automatically. Security headers come from
 
 ```bash
 cd frontend
-vercel --prod --yes -b NEXT_PUBLIC_FACTORY_ADDRESS=0x66eB8Aa020f9625b14Fee89c7E9a16Fe62C2Dc03
+vercel --prod --yes
 ```
 
 **VPS / nginx (serves under `/arcsafe/`).** Build locally, copy `out/`, and
@@ -254,9 +253,9 @@ is the correct conversion — but every user-facing label says USDC.
 
 - **A native transfer can revert with a sufficient balance.** Transfers to the
   zero address, to burn addresses, or to Circle-blocklisted addresses are
-  rejected by the chain. `ArcSafe.submit` already refuses `address(0)`, and the
+  rejected by the chain. `NoxSafe.submit` already refuses `address(0)`, and the
   UI explains this case when `ExecutionFailed` comes back.
-- **`PREVRANDAO` returns 0.** There is no onchain randomness. ArcSafe does not
+- **`PREVRANDAO` returns 0.** There is no onchain randomness. NoxSafe does not
   use any.
 - **Blob transactions are unsupported** and `BLOBHASH` returns 0. Not used here.
 - **The base fee goes to the block beneficiary** rather than being burned.
@@ -371,4 +370,4 @@ MIT © SoftNox.
 
 Testnet software. Not audited. Do not custody assets of real value.
 
-ArcSafe is a product of SoftNox.
+NoxSafe is a product of SoftNox.

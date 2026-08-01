@@ -1,11 +1,7 @@
-# No current deployment.
+# Canonical deployment data lives in deployments/arc-testnet.json.
 #
-# This file previously contained 0xB81E936BE2dfee71d52EFeCa6eacbfcbAF969C00.
-# That address holds no bytecode: its creation transaction
-# (0xe55a6eb4f961a5406e348c2db5b45e9c3ae8a8d95794eb51605ae26d45962ed7)
-# reverted out of gas, status 0x0. A creation receipt reports a
-# contractAddress whether or not the creation succeeded, which is how the
-# dead address ended up here.
+# NoxSafeFactory v1 (Arc Testnet, chain ID 5042002)
+0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab
 #
-# After deploying, record the address only once this passes:
-#   SAFE=0x... npm run verify:deployment
+# Verify the address, interface, and exact runtime bytecode:
+#   npm run verify:factory

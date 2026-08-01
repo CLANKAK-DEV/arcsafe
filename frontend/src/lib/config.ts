@@ -1,3 +1,5 @@
+import deployment from '../../../deployments/arc-testnet.json';
+
 /**
  * Chain and contract configuration.
  *
@@ -35,22 +37,25 @@ export const ARC_CHAIN_PARAMS = {
   blockExplorerUrls: [ARC_TESTNET.explorer],
 };
 
-/**
- * Set after a deployment that has been verified with:
- *   SAFE=0x... npm run verify:deployment
- *
- * Deliberately empty by default. The previous build shipped a hard-coded
- * address whose deployment transaction had reverted, so every call returned
- * "0x" and the UI silently showed an empty safe. The app now checks for
- * bytecode before trusting any address — see lib/safe.ts.
- */
+/** The public factory is pinned to the versioned, verified deployment record. */
 export const SAFE_ADDRESS = process.env.NEXT_PUBLIC_SAFE_ADDRESS ?? '';
-export const FACTORY_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_ADDRESS ?? '';
+const legacyFactoryOverride = process.env.NEXT_PUBLIC_FACTORY_ADDRESS?.trim();
+if (
+  legacyFactoryOverride &&
+  deployment.factory.address &&
+  legacyFactoryOverride.toLowerCase() !== deployment.factory.address.toLowerCase()
+) {
+  throw new Error('NEXT_PUBLIC_FACTORY_ADDRESS conflicts with deployments/arc-testnet.json.');
+}
+
+export const FACTORY_ADDRESS = deployment.factory.address;
+export const FACTORY_RUNTIME_CODE_HASH = deployment.factory.runtimeCodeHash;
+export const FACTORY_VERSION = deployment.factory.version;
 
 export const explorerAddress = (addr: string) => `${ARC_TESTNET.explorer}/address/${addr}`;
 export const explorerTx = (hash: string) => `${ARC_TESTNET.explorer}/tx/${hash}`;
 
-export const ARCSAFE_ABI = [
+export const NOXSAFE_ABI = [
   // Views
   'function getOwners() view returns (address[])',
   'function ownerCount() view returns (uint256)',

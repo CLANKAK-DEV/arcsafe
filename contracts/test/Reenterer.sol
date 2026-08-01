@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-interface IArcSafe {
+interface INoxSafe {
     function execute(uint256 txId) external returns (bytes memory);
 }
 
@@ -11,13 +11,13 @@ interface IArcSafe {
 ///      `safe` is settable because the safe's constructor needs this contract's
 ///      address in its owner list, so one of the two must be wired up after.
 contract Reenterer {
-    IArcSafe public safe;
+    INoxSafe public safe;
     uint256 public targetTxId;
     bool public reentryAttempted;
     bool public reentrySucceeded;
 
     function configure(address safe_, uint256 txId) external {
-        safe = IArcSafe(safe_);
+        safe = INoxSafe(safe_);
         targetTxId = txId;
     }
 

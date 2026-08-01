@@ -1,7 +1,9 @@
 const hre = require('hardhat');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
- * Deploy ArcSafeFactory — the one shared contract this product needs.
+ * Deploy NoxSafeFactory — the one shared contract this product needs.
  *
  * The factory is public infrastructure: it has no owner, no admin function and
  * no upgrade path. Whoever deploys it gains no authority over the safes other
@@ -27,7 +29,7 @@ const OWNERS = (process.env.OWNERS ?? '')
   .filter(Boolean);
 const THRESHOLD = Number(process.env.THRESHOLD ?? 0);
 
-async function assertDeployed(label, address) {
+async function readDeployment(label, address) {
   const code = await hre.ethers.provider.getCode(address);
   if (code === '0x' || code === '0x0') {
     throw new Error(
@@ -35,7 +37,7 @@ async function assertDeployed(label, address) {
         `The creation transaction reverted — check the gas limit and evmVersion.`,
     );
   }
-  return (code.length - 2) / 2;
+  return { code, bytes: (code.length - 2) / 2, runtimeCodeHash: hre.ethers.keccak256(code) };
 }
 
 async function main() {
@@ -47,15 +49,15 @@ async function main() {
   const balance = await ethers.provider.getBalance(deployer.address);
   const chainId = (await ethers.provider.getNetwork()).chainId;
 
-  console.log('Deploying ArcSafe infrastructure');
+  console.log('Deploying NoxSafe infrastructure');
   console.log(`  network   ${network.name} (chainId ${chainId})`);
   console.log(`  deployer  ${deployer.address}`);
   console.log(`  balance   ${ethers.formatEther(balance)} USDC`);
 
   if (balance === 0n) throw new Error('Deployer has zero balance — fund it before deploying.');
 
-  // ── ArcSafeFactory — the product ───────────────────────────────────
-  const FactoryFactory = await ethers.getContractFactory('ArcSafeFactory');
+  // ── NoxSafeFactory — the product ───────────────────────────────────
+  const FactoryFactory = await ethers.getContractFactory('NoxSafeFactory');
   const estimate = await ethers.provider.estimateGas({
     ...(await FactoryFactory.getDeployTransaction()),
     from: deployer.address,
@@ -70,10 +72,28 @@ async function main() {
   if (receipt.status !== 1) {
     throw new Error(`Factory deployment reverted. status=${receipt.status} gasUsed=${receipt.gasUsed}`);
   }
-  const factoryBytes = await assertDeployed('ArcSafeFactory', factoryAddress);
+  const factoryDeployment = await readDeployment('NoxSafeFactory', factoryAddress);
+
+  const deploymentRecord = {
+    network: 'Arc Testnet',
+    chainId: Number(chainId),
+    factory: {
+      contract: 'NoxSafeFactory',
+      version: 1,
+      address: factoryAddress,
+      deploymentTransaction: receipt.hash,
+      deploymentBlock: receipt.blockNumber,
+      runtimeCodeHash: factoryDeployment.runtimeCodeHash,
+      runtimeBytecodeBytes: factoryDeployment.bytes,
+    },
+  };
+  const registryPath = path.join(__dirname, '..', 'deployments', 'arc-testnet.json');
+  fs.writeFileSync(registryPath, `${JSON.stringify(deploymentRecord, null, 2)}\n`);
 
   console.log('\nDeployed and verified on-chain:');
-  console.log(`  ArcSafeFactory  ${factoryAddress}  (${factoryBytes} bytes, ${receipt.gasUsed} gas)`);
+  console.log(`  NoxSafeFactory  ${factoryAddress}  (${factoryDeployment.bytes} bytes, ${receipt.gasUsed} gas)`);
+  console.log(`  runtime hash    ${factoryDeployment.runtimeCodeHash}`);
+  console.log(`  registry        ${registryPath}`);
 
   // ── Optional demo safe ─────────────────────────────────────────────
   let demoAddress = null;
@@ -108,14 +128,13 @@ async function main() {
       })
       .find((e) => e?.name === 'SafeDeployed');
     demoAddress = event.args.safe;
-    await assertDeployed('Demo ArcSafe', demoAddress);
+    await readDeployment('Demo NoxSafe', demoAddress);
 
-    console.log(`  Demo ArcSafe    ${demoAddress}  (${THRESHOLD} of ${OWNERS.length})`);
+    console.log(`  Demo NoxSafe    ${demoAddress}  (${THRESHOLD} of ${OWNERS.length})`);
   }
 
   // ── What to do next ────────────────────────────────────────────────
-  console.log('\nSet this in frontend/.env.local, then rebuild the frontend:');
-  console.log(`  NEXT_PUBLIC_FACTORY_ADDRESS=${factoryAddress}`);
+  console.log('\nThe frontend now reads this verified address from deployments/arc-testnet.json.');
   if (demoAddress) console.log(`  NEXT_PUBLIC_SAFE_ADDRESS=${demoAddress}`);
   console.log('\nUsers create their own safes from the web UI. No further deployments needed.');
 }

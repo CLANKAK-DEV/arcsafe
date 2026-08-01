@@ -14,15 +14,15 @@ import {
   ShieldCheckIcon,
   UsersIcon,
 } from '../components/Icons';
-import { ArcMark } from '../components/Logo';
+import { NoxMark } from '../components/Logo';
 import { SiteFooter, SiteHeader } from '../components/Shell';
 import { QuorumNetworkVisual } from '../components/Visuals';
 import { Badge, Card, linkButtonClass } from '../components/ui';
 import { ARC_TESTNET } from '../lib/config';
 
-const TITLE = 'ArcSafe | multi-signature wallet for Arc';
+const TITLE = 'NoxSafe | multi-signature custody built on Arc Network';
 const DESCRIPTION =
-  'N-of-M multi-signature custody for Arc Chain. Owner and threshold changes are themselves multi-sig transactions, so no single key can ever move funds alone.';
+  'NoxSafe is N-of-M multi-signature custody built on Arc Network. Owner and threshold changes require the same quorum as transfers.';
 
 export default function Landing() {
   return (
@@ -81,7 +81,7 @@ function Hero() {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-secondary">
-              Shared custody for Arc treasuries. Transfers and security changes require the quorum you define.
+              Independent multi-signature custody built on Arc Network. Transfers and security changes require the quorum you define.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -105,7 +105,7 @@ function Hero() {
 
 function ProofBand() {
   const facts = [
-    ['42', 'contract tests passing'],
+    ['43', 'contract tests passing'],
     ['32', 'calls in one atomic batch'],
     ['0', 'runtime dependencies'],
     ['MIT', 'open-source licence'],
@@ -136,7 +136,7 @@ function HeroPanel() {
 
       <div className="card overflow-hidden shadow-lift">
         <div className="flex flex-col items-center gap-4 border-b border-hairline bg-gradient-to-b from-surface-2/80 to-transparent px-6 py-10">
-          <ArcMark size={76} />
+          <NoxMark size={76} />
           <div className="text-center">
             <p className="text-sm font-semibold text-primary">2 of 3 signatures required</p>
             <p className="mt-1 text-xs text-muted">Every transfer. Every config change. No exceptions.</p>
@@ -234,7 +234,7 @@ function SecuritySection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading eyebrow="Security model" title="The rule that makes it a multi-sig">
           A wallet where one owner can change the threshold is not a multi-sig. It is a shared hot
-          wallet with extra steps. ArcSafe separates the two capabilities explicitly.
+          wallet with extra steps. NoxSafe separates the two capabilities explicitly.
         </SectionHeading>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-2">
@@ -268,7 +268,7 @@ function SecuritySection() {
                 <LockIcon size={18} />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-primary">What ArcSafe does</h3>
+                <h3 className="text-sm font-semibold text-primary">What NoxSafe does</h3>
                 <p className="mt-1 text-sm text-muted">Config changes route through the quorum.</p>
               </div>
             </div>
@@ -322,7 +322,7 @@ function changeThreshold(uint256 t)
         <div className="mt-4 rounded-lg border border-warn/30 bg-warn/8 p-5">
           <p className="text-sm font-semibold text-warn">Not audited</p>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-secondary">
-            ArcSafe has a full unit-test suite but no third-party audit. Treat it as testnet
+            NoxSafe has a full unit-test suite but no third-party audit. Treat it as testnet
             software. The security properties described here are enforced by tests you can run
             yourself with <code className="text-primary">npm test</code>. That is evidence, not a
             substitute for review.
@@ -377,7 +377,7 @@ function SpecSection() {
   const groups: Array<{ title: string; rows: Array<[string, ReactNode]> }> = [
     { title: 'Network', rows: [['Chain', `${ARC_TESTNET.name} (${ARC_TESTNET.chainId})`], ['Gas', 'USDC, 18 decimals'], ['RPC', <code key="rpc">{ARC_TESTNET.rpcUrls[0]}</code>]] },
     { title: 'Contracts', rows: [['Compiler', 'Solidity 0.8.24'], ['EVM', 'Paris'], ['Runtime', '9,754 bytes']] },
-    { title: 'Assurance', rows: [['Tests', '42 passing'], ['Dependencies', 'None'], ['Licence', 'MIT']] },
+    { title: 'Assurance', rows: [['Tests', '43 passing'], ['Dependencies', 'None'], ['Licence', 'MIT']] },
   ];
 
   return (
@@ -493,7 +493,7 @@ function ClosingCta() {
   return (
     <section className="border-t border-hairline/70 py-20">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <ArcMark size={56} />
+        <NoxMark size={56} />
         <h2 className="mt-6 text-3xl font-bold tracking-tight text-primary sm:text-4xl">
           Deploy one and try to break it
         </h2>

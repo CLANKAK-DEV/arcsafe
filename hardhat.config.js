@@ -58,7 +58,7 @@ module.exports = {
       chainId: 5042002,
       accounts,
       // The original deployment reverted with gasUsed == gasLimit == 2,000,000.
-      // ArcSafe's runtime is ~9.7 KB, and code deposit alone costs 200 gas/byte
+      // NoxSafe's runtime is ~9.7 KB, and code deposit alone costs 200 gas/byte
       // (~1.94M) before constructor execution — it never had room to finish.
       gas: 6_000_000,
     },

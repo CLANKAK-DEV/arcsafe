@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {ArcSafe} from "./ArcSafe.sol";
+import {NoxSafe} from "./NoxSafe.sol";
 
-/// @title  ArcSafeFactory
-/// @notice Deploys ArcSafe instances at deterministic addresses and indexes
+/// @title  NoxSafeFactory
+/// @notice Deploys NoxSafe instances at deterministic addresses and indexes
 ///         them by owner, so a frontend can list "safes I belong to" without
 ///         running a separate indexer.
-contract ArcSafeFactory {
+contract NoxSafeFactory {
     error NoOwners();
     error SafeAlreadyExists();
 
@@ -34,7 +34,7 @@ contract ArcSafeFactory {
         address predicted = _predict(scopedSalt, owners, threshold);
         if (predicted.code.length != 0) revert SafeAlreadyExists();
 
-        safe = address(new ArcSafe{salt: scopedSalt}(owners, threshold));
+        safe = address(new NoxSafe{salt: scopedSalt}(owners, threshold));
 
         for (uint256 i = 0; i < owners.length; ++i) {
             _safesOf[owners[i]].push(safe);
@@ -53,7 +53,7 @@ contract ArcSafeFactory {
         return _predict(keccak256(abi.encodePacked(deployer, salt)), owners, threshold);
     }
 
-    /// @dev The CREATE2 address for an ArcSafe with these constructor args under
+    /// @dev The CREATE2 address for a NoxSafe with these constructor args under
     ///      an already-scoped salt. Shared by predictAddress and the collision
     ///      guard in createSafe so the two can never drift apart.
     function _predict(bytes32 scopedSalt, address[] calldata owners, uint256 threshold)
@@ -62,7 +62,7 @@ contract ArcSafeFactory {
         returns (address)
     {
         bytes32 initCodeHash =
-            keccak256(abi.encodePacked(type(ArcSafe).creationCode, abi.encode(owners, threshold)));
+            keccak256(abi.encodePacked(type(NoxSafe).creationCode, abi.encode(owners, threshold)));
 
         return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), scopedSalt, initCodeHash)))));
     }

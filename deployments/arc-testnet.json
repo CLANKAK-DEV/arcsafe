@@ -1,0 +1,13 @@
+{
+  "network": "Arc Testnet",
+  "chainId": 5042002,
+  "factory": {
+    "contract": "NoxSafeFactory",
+    "version": 1,
+    "address": "0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab",
+    "deploymentTransaction": "0xa77099e9a75e16ddf5c7ca1343234a6d1d2122d9729093ca26396c230e78f996",
+    "deploymentBlock": 54802455,
+    "runtimeCodeHash": "0xf0f9c8f9e20a38de9e4fe158c6561ed1801e8b95ec8e14d43654d8c4539c0fe9",
+    "runtimeBytecodeBytes": 12907
+  }
+}

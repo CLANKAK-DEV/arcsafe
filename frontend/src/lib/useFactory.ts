@@ -1,6 +1,6 @@
-import { BrowserProvider, Contract, JsonRpcProvider, id, isAddress } from 'ethers';
+import { BrowserProvider, Contract, JsonRpcProvider, hexlify, isAddress, keccak256, randomBytes } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
-import { ARC_TESTNET, FACTORY_ABI, FACTORY_ADDRESS } from './config';
+import { ARC_TESTNET, FACTORY_ABI, FACTORY_ADDRESS, FACTORY_RUNTIME_CODE_HASH } from './config';
 import { humanizeError } from './format';
 
 /** Reads always go to the Arc RPC, never through the wallet's current network. */
@@ -10,7 +10,22 @@ const reader = new JsonRpcProvider(ARC_TESTNET.rpcUrls[0], ARC_TESTNET.chainId, 
   batchMaxCount: 1,
 });
 
-export const factoryConfigured = isAddress(FACTORY_ADDRESS);
+export const factoryConfigured = isAddress(FACTORY_ADDRESS) && /^0x[0-9a-f]{64}$/i.test(FACTORY_RUNTIME_CODE_HASH);
+
+async function assertCurrentFactory() {
+  if (!factoryConfigured) throw new Error('No verified factory deployment is configured.');
+
+  const code = await reader.getCode(FACTORY_ADDRESS);
+  if (code === '0x') throw new Error('The configured factory address holds no contract.');
+
+  const actualHash = keccak256(code);
+  if (actualHash.toLowerCase() !== FACTORY_RUNTIME_CODE_HASH.toLowerCase()) {
+    throw new Error('The configured factory address contains an incompatible contract version.');
+  }
+
+  const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, reader);
+  await factory.safeCount();
+}
 
 /**
  * Safes the connected account belongs to.
@@ -35,13 +50,8 @@ export function useMySafes(account: string | null) {
     let cancelled = false;
     (async () => {
       try {
-        const code = await reader.getCode(FACTORY_ADDRESS);
+        await assertCurrentFactory();
         if (cancelled) return;
-        if (code === '0x') {
-          setError('The configured factory address holds no contract.');
-          setSafes([]);
-          return;
-        }
 
         const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, reader);
         const list = (await factory.safesOf(account)) as string[];
@@ -77,10 +87,11 @@ export async function createSafe(
   owners: string[],
   threshold: number,
 ): Promise<CreateResult> {
+  await assertCurrentFactory();
   const signer = await wallet.getSigner();
   const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
 
-  const salt = id(`${await signer.getAddress()}-${Date.now()}-${Math.random()}`);
+  const salt = hexlify(randomBytes(32));
 
   const tx = await factory.createSafe(owners, threshold, salt);
   const receipt = await tx.wait();

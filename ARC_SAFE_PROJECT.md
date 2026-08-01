@@ -1,4 +1,4 @@
-# 🔐 ArcSafe — Multi-Signature Wallet for Arc Chain
+# 🔐 NoxSafe — Multi-Signature Custody Built on Arc Network
 
 > **⚠️ This document is out of date. See [README.md](README.md) for current status.**
 >
@@ -67,7 +67,7 @@ Owner 3 → ─ (not needed, 2/3 met)
 
 ```
 /home/ubuntu/arc-safe/
-├── contracts/ArcSafe.sol      ← Smart contract
+├── contracts/NoxSafe.sol      ← Smart contract
 ├── scripts/deploy.js           ← Hardhat deploy script
 ├── frontend/public/index.html  ← Live UI
 ├── hardhat.config.js           ← Arc RPC config
@@ -140,7 +140,7 @@ or
 3. Deploy on Arc mainnet
 4. Post in Arc Discord `#ecosystem` channel
 5. Tag Arc team on X/Twitter
-6. Write docs: "How DAOs use ArcSafe for treasury"
+6. Write docs: "How DAOs use NoxSafe for treasury"
 
 ---
 

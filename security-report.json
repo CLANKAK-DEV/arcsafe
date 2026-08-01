@@ -1,9 +1,9 @@
 {
-  "project": "ArcSafe — N-of-M multi-signature wallet for Arc Chain",
+  "project": "NoxSafe — N-of-M multi-signature custody built on Arc Network",
   "date": "2026-07-20",
   "remediation_pass": "2026-07-20",
   "scope": {
-    "contracts": ["contracts/ArcSafe.sol", "contracts/ArcSafeFactory.sol", "contracts/test/Reenterer.sol"],
+    "contracts": ["contracts/NoxSafe.sol", "contracts/NoxSafeFactory.sol", "contracts/test/Reenterer.sol"],
     "tooling": ["hardhat.config.js", "scripts/deploy.js", "scripts/verify-deployment.js", "scripts/check-secrets.js"],
     "frontend": "frontend/src (Next.js 14 static export, ethers v6)",
     "deploy": ["deploy/nginx-arcsafe.conf"],
@@ -55,7 +55,7 @@
       "confidence": "Confirmed",
       "cwe": "CWE-1053",
       "owasp_category": "n/a (process)",
-      "file": "contracts/ArcSafe.sol, contracts/ArcSafeFactory.sol",
+      "file": "contracts/NoxSafe.sol, contracts/NoxSafeFactory.sol",
       "lines": "whole files",
       "status": "Accepted risk",
       "root_cause": "Pre-audit software, openly disclosed in README and the app UI.",
@@ -70,10 +70,10 @@
       "confidence": "Confirmed",
       "cwe": "CWE-1164",
       "owasp_category": "n/a",
-      "file": "contracts/ArcSafeFactory.sol",
+      "file": "contracts/NoxSafeFactory.sol",
       "lines": "12, 24-39",
       "status": "Patched",
-      "root_cause": "Dead error declared but never reverted; a same-salt/same-args createSafe reverted at the EVM level from the new ArcSafe{salt} collision with no decodable custom error.",
+      "root_cause": "Dead error declared but never reverted; a same-salt/same-args createSafe reverted at the EVM level from the new NoxSafe{salt} collision with no decodable custom error.",
       "impact": "No fund/authorization impact; a colliding deployment surfaced as a generic revert the frontend could not humanize.",
       "remediation": "Pre-check predicted CREATE2 address and revert SafeAlreadyExists() when occupied; map the error in the UI.",
       "remediation_applied": "createSafe now pre-checks via a shared _predict helper (refactored out of predictAddress) and reverts SafeAlreadyExists(). Error added to FACTORY_ABI and humanizeError. New regression test added. Suite 43 passing. Requires a factory redeploy to carry the new bytecode on-chain.",
@@ -87,7 +87,7 @@
     "64-hex matches in artifacts/ and docs — transaction hashes and contract bytecode, not the private key (confirmed the literal key value appears only in .env)."
   ],
   "patches_applied": [
-    { "finding": "SEC-004", "files": ["contracts/ArcSafeFactory.sol", "frontend/src/lib/config.ts", "frontend/src/lib/format.ts", "test/ArcSafe.test.js"] },
+    { "finding": "SEC-004", "files": ["contracts/NoxSafeFactory.sol", "frontend/src/lib/config.ts", "frontend/src/lib/format.ts", "test/NoxSafe.test.js"] },
     { "finding": "SEC-002", "files": ["deploy/nginx-arcsafe.conf", "frontend/src/pages/_app.tsx"] },
     { "finding": "SEC-001", "files": ["scripts/check-secrets.js", "package.json"] }
   ],

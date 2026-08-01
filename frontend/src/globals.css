@@ -75,7 +75,7 @@
     @apply translate-y-0;
   }
 
-  /* Headline emphasis — the metallic sheen of the Arc mark.
+  /* Headline emphasis uses NoxSafe's cool silver product palette.
      A background-clip gradient normally risks contrast, so this one is
      deliberately narrow: both stops are near-white silver drawn from the top
      of the arch (#FFFFFF → #DCE7F2), each above 15:1 on the navy base. The

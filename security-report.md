@@ -1,8 +1,8 @@
-# Security Audit Report — ArcSafe — 2026-07-20
+# Security Audit Report — NoxSafe — 2026-07-20
 
 ## 1. Executive summary
 
-Audited the ArcSafe monorepo: two production Solidity contracts (multi-sig wallet +
+Audited the NoxSafe monorepo: two production Solidity contracts (multi-sig wallet +
 factory), the Hardhat deploy/verify tooling, and the Next.js static-export frontend.
 Findings: **0 Critical, 1 High, 1 Medium, 2 Low**. The smart contracts themselves are
 strong: the historical single-owner drain bug is fixed via the `onlySelf` model,
@@ -30,7 +30,7 @@ the residual High is key rotation, which only the key owner can perform.
 ## 2. Project architecture detected
 
 - **Smart contracts** — Solidity `0.8.24`, optimizer on (200 runs), `evmVersion:
-  paris`. `ArcSafe.sol` (N-of-M multisig, fund custody) and `ArcSafeFactory.sol`
+  paris`. `NoxSafe.sol` (N-of-M multisig, fund custody) and `NoxSafeFactory.sol`
   (CREATE2 deployer + per-owner index). No external dependencies (no OpenZeppelin,
   no proxies, no delegatecall, no assembly beyond CREATE2).
 - **Tooling** — Hardhat + `@nomicfoundation/hardhat-toolbox`; deploy and
@@ -95,13 +95,13 @@ open item below.
 ### Evidence
 `.env` line 11 contains a 64-hex EVM private key in plaintext: `0xb7d3****0cca`
 (redacted). `hardhat.config.js` loads it into the `arcTestnet` signer set, and
-`frontend/.env.local` already carries a deployed `NEXT_PUBLIC_FACTORY_ADDRESS`
-(`0x66eB…Dc03`), indicating this key has signed at least one on-chain deployment.
+The configured deployer signed the factory deployment recorded in
+`deployments/arc-testnet.json`, so this key has been used on-chain.
 
 ### Root cause
 Deployer secret kept unencrypted at rest. Mitigating controls are present —
 `.gitignore` excludes `.env` and `.env.*` (re-including only `.env.example`), and the
-working tree is **not** a git repository — so the key is not committed or published.
+key file is ignored by Git, so it is not committed or published.
 The residual risk is the cleartext-at-rest copy: any folder zip, cloud backup,
 screen-share, or a future `git init && git add .` before the ignore rules take effect
 would expose it.
@@ -194,7 +194,7 @@ should return the configured headers.
 - Confidence: Confirmed
 - CWE: CWE-1053 (Missing Assurance) — informational
 - OWASP category: n/a (process)
-- File: `contracts/ArcSafe.sol`, `contracts/ArcSafeFactory.sol`
+- File: `contracts/NoxSafe.sol`, `contracts/NoxSafeFactory.sol`
 - Lines: whole files
 - Status: Accepted risk (testnet)
 
@@ -224,7 +224,7 @@ Manual/process — audit report on file before a mainnet deploy tag.
 - Confidence: Confirmed
 - CWE: CWE-1164 (Irrelevant Code) — code quality
 - OWASP category: n/a
-- File: `contracts/ArcSafeFactory.sol`
+- File: `contracts/NoxSafeFactory.sol`
 - Lines: 12, 24–39
 - Status: **Patched** — collision guard added, error humanized, regression test added
 
@@ -240,7 +240,7 @@ was added. Full suite: **43 passing**.
 ### Evidence
 `error SafeAlreadyExists();` was declared but never reverted. A repeat
 `createSafe(...)` with the same `(msg.sender, salt, owners, threshold)` reverted at the
-EVM level from the `new ArcSafe{salt}` collision, producing no decodable custom error.
+EVM level from the `new NoxSafe{salt}` collision, producing no decodable custom error.
 
 ### Root cause
 Dead error left after a refactor; the collision is never checked/mapped explicitly.
@@ -279,9 +279,9 @@ change). No secret value appears in it.
 
 | Finding | Change | Files |
 |---------|--------|-------|
-| SEC-004 | CREATE2 collision guard + shared `_predict` helper; named `SafeAlreadyExists` revert | `contracts/ArcSafeFactory.sol` |
+| SEC-004 | CREATE2 collision guard + shared `_predict` helper; named `SafeAlreadyExists` revert | `contracts/NoxSafeFactory.sol` |
 | SEC-004 | Error surfaced to client + humanized | `frontend/src/lib/config.ts`, `frontend/src/lib/format.ts` |
-| SEC-004 | Regression test for the collision | `test/ArcSafe.test.js` |
+| SEC-004 | Regression test for the collision | `test/NoxSafe.test.js` |
 | SEC-002 | Hardened nginx server block (CSP/HSTS/XFO/nosniff/Referrer/Permissions/COOP, HTTP→HTTPS) | `deploy/nginx-arcsafe.conf` (new) |
 | SEC-002 | `no-referrer` document meta | `frontend/src/pages/_app.tsx` |
 | SEC-001 | Secret-leak guard + npm script | `scripts/check-secrets.js` (new), `package.json` |

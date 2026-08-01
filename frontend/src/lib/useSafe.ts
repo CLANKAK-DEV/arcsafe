@@ -1,6 +1,6 @@
 import { BrowserProvider, Contract, JsonRpcProvider, isAddress } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
-import { ARCSAFE_ABI, ARC_TESTNET } from './config';
+import { NOXSAFE_ABI, ARC_TESTNET } from './config';
 import { humanizeError } from './format';
 
 export type BatchCall = { to: string; value: bigint; data: string };
@@ -101,7 +101,7 @@ export function useSafe(address: string, account: string | null) {
           return;
         }
 
-        const safe = new Contract(address, ARCSAFE_ABI, reader);
+        const safe = new Contract(address, NOXSAFE_ABI, reader);
 
         const [owners, thresholdRaw, txCountRaw, balance] = await withTimeout(
           Promise.all([
@@ -175,11 +175,11 @@ export function useSafe(address: string, account: string | null) {
         });
       } catch (e) {
         if (cancelled) return;
-        // A contract that exists but lacks these functions is not an ArcSafe.
+        // A contract that exists but lacks these functions is not an NoxSafe.
         const msg = humanizeError(e);
         setStatus(
           /could not decode|BAD_DATA|no matching/i.test(msg)
-            ? { kind: 'not-a-safe', detail: 'This address holds a contract, but it is not an ArcSafe.' }
+            ? { kind: 'not-a-safe', detail: 'This address holds a contract, but it is not an NoxSafe.' }
             : { kind: 'error', detail: msg },
         );
       }
@@ -196,5 +196,5 @@ export function useSafe(address: string, account: string | null) {
 /** Write path — needs a signer, so it always comes from the injected wallet. */
 export async function safeWriter(wallet: BrowserProvider, address: string) {
   const signer = await wallet.getSigner();
-  return new Contract(address, ARCSAFE_ABI, signer);
+  return new Contract(address, NOXSAFE_ABI, signer);
 }

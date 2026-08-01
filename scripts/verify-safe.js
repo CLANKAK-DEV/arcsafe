@@ -1,7 +1,7 @@
 const hre = require('hardhat');
 
 /**
- * Independently verify that an address holds a working ArcSafe.
+ * Independently verify that an address holds a working NoxSafe.
  *
  * Usage:  SAFE=0x... npx hardhat run scripts/verify-deployment.js --network arcTestnet
  *
@@ -24,7 +24,7 @@ async function main() {
   }
   console.log(`  bytecode   ${(code.length - 2) / 2} bytes`);
 
-  const safe = await ethers.getContractAt('ArcSafe', address);
+  const safe = await ethers.getContractAt('NoxSafe', address);
   const [owners, threshold, txCount, balance] = await Promise.all([
     safe.getOwners(),
     safe.threshold(),
@@ -44,7 +44,7 @@ async function main() {
     return;
   }
 
-  console.log('\nOK: live ArcSafe.');
+  console.log('\nOK: live NoxSafe.');
 }
 
 main().catch((e) => {

@@ -1,8 +1,8 @@
 /**
- * ArcSafe design tokens.
+ * NoxSafe design tokens.
  *
- * Derived from the Arc mark: a silver-to-white arch on a deep navy radial
- * field. Everything here is a semantic token — components reference
+ * NoxSafe's independent palette: cool silver and steel blue on a deep navy
+ * radial field. Everything here is a semantic token — components reference
  * `bg-surface` / `text-secondary`, never a raw hex.
  *
  * Contrast (WCAG AA needs 4.5:1 body, 3:1 large text and UI):

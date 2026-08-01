@@ -86,8 +86,8 @@ export default function CreatePage() {
   return (
     <>
       <Head>
-        <title>Create a safe | ArcSafe</title>
-        <meta name="description" content="Deploy your own multi-signature safe on Arc in one transaction." />
+        <title>Create a safe | NoxSafe</title>
+        <meta name="description" content="Deploy a NoxSafe multi-signature account on Arc Network in one transaction." />
       </Head>
 
       <SiteHeader
@@ -120,9 +120,9 @@ export default function CreatePage() {
               <div className="mt-6">
                 <Callout tone="danger" title="No factory configured">
                   <p>
-                    Set <code className="text-primary">NEXT_PUBLIC_FACTORY_ADDRESS</code> in{' '}
-                    <code className="text-primary">frontend/.env.local</code> and rebuild. Deploy the
-                    factory once with <code className="text-primary">npm run deploy:testnet</code>.
+                    The verified deployment registry is missing or incomplete. Run{' '}
+                    <code className="text-primary">npm run deploy:testnet</code>, then confirm it with{' '}
+                    <code className="text-primary">npm run verify:factory</code> and rebuild.
                   </p>
                 </Callout>
               </div>

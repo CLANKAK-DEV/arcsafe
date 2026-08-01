@@ -60,7 +60,7 @@ export default function AppPage() {
   return (
     <>
       <Head>
-        <title>Dashboard | ArcSafe</title>
+        <title>Dashboard | NoxSafe</title>
         <meta name="robots" content="noindex" />
       </Head>
 
@@ -69,7 +69,7 @@ export default function AppPage() {
       <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {/* The visible page title varies by state; this anchors the heading
             hierarchy so the document never starts at h2. */}
-        <h1 className="sr-only">ArcSafe dashboard</h1>
+        <h1 className="sr-only">NoxSafe dashboard</h1>
 
         {!mounted ? (
           <div className="space-y-6" aria-busy="true" aria-label="Loading">
@@ -82,7 +82,7 @@ export default function AppPage() {
           <div className="mb-6">
             <Callout title={`Wrong network`}>
               <p>
-                Your wallet is on chain {wallet.chainId}. ArcSafe runs on {ARC_TESTNET.name} (
+                Your wallet is on chain {wallet.chainId}. NoxSafe runs on {ARC_TESTNET.name} (
                 {ARC_TESTNET.chainId}).
               </p>
               <Button variant="secondary" size="sm" className="mt-3" onClick={wallet.switchToArc}>
@@ -140,7 +140,7 @@ export default function AppPage() {
                 placeholder="0x…"
                 value={input}
                 error={inputError}
-                hint="Paste any ArcSafe address on Arc Testnet."
+                hint="Paste any NoxSafe address on Arc Testnet."
                 onChange={(e) => setInput(e.target.value.trim())}
                 spellCheck={false}
                 autoComplete="off"
@@ -285,7 +285,7 @@ function SafeView({
   }
 
   if (status.kind === 'not-a-safe') {
-    return <Callout tone="danger" title="Not an ArcSafe">{status.detail}</Callout>;
+    return <Callout tone="danger" title="Not an NoxSafe">{status.detail}</Callout>;
   }
 
   if (status.kind === 'error') {
