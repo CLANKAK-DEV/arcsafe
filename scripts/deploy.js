@@ -87,7 +87,7 @@ async function main() {
       runtimeBytecodeBytes: factoryDeployment.bytes,
     },
   };
-  const registryPath = path.join(__dirname, '..', 'deployments', 'arc-testnet.json');
+  const registryPath = path.join(__dirname, '..', 'frontend', 'src', 'deployments', 'arc-testnet.json');
   fs.writeFileSync(registryPath, `${JSON.stringify(deploymentRecord, null, 2)}\n`);
 
   console.log('\nDeployed and verified on-chain:');
@@ -134,7 +134,7 @@ async function main() {
   }
 
   // ── What to do next ────────────────────────────────────────────────
-  console.log('\nThe frontend now reads this verified address from deployments/arc-testnet.json.');
+  console.log('\nThe frontend now reads this verified address from its versioned deployment registry.');
   if (demoAddress) console.log(`  NEXT_PUBLIC_SAFE_ADDRESS=${demoAddress}`);
   console.log('\nUsers create their own safes from the web UI. No further deployments needed.');
 }

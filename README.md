@@ -26,7 +26,7 @@ transaction. No single owner can lower the bar and move funds alone.
 > | | |
 > |---|---|
 > | Live app | **https://arcsafe.vercel.app** |
-> | `NoxSafeFactory` | Read from [`deployments/arc-testnet.json`](deployments/arc-testnet.json) |
+> | `NoxSafeFactory` | Read from the [verified deployment registry](frontend/src/deployments/arc-testnet.json) |
 > | Verification | `npm run verify:factory` checks the chain, interface, and exact runtime code hash |
 > | Tests | 43 passing · internal audit: 0 Critical |
 >
@@ -186,7 +186,7 @@ cap.
 ### Hosting the frontend
 
 The interface is a static export holding **no secrets**. Its public factory is
-pinned by address and runtime code hash in `deployments/arc-testnet.json`.
+pinned by address and runtime code hash in `frontend/src/deployments/arc-testnet.json`.
 
 **Vercel (current live host — recommended).** Free HTTPS + HSTS, and the app
 serves at the domain root automatically. Security headers come from

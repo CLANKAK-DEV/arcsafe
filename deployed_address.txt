@@ -1,4 +1,4 @@
-# Canonical deployment data lives in deployments/arc-testnet.json.
+# Canonical deployment data lives in frontend/src/deployments/arc-testnet.json.
 #
 # NoxSafeFactory v1 (Arc Testnet, chain ID 5042002)
 0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab

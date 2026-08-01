@@ -1,4 +1,4 @@
-import deployment from '../../../deployments/arc-testnet.json';
+import deployment from '../deployments/arc-testnet.json';
 
 /**
  * Chain and contract configuration.
@@ -45,7 +45,7 @@ if (
   deployment.factory.address &&
   legacyFactoryOverride.toLowerCase() !== deployment.factory.address.toLowerCase()
 ) {
-  throw new Error('NEXT_PUBLIC_FACTORY_ADDRESS conflicts with deployments/arc-testnet.json.');
+  throw new Error('NEXT_PUBLIC_FACTORY_ADDRESS conflicts with the verified deployment registry.');
 }
 
 export const FACTORY_ADDRESS = deployment.factory.address;

@@ -96,7 +96,7 @@ open item below.
 `.env` line 11 contains a 64-hex EVM private key in plaintext: `0xb7d3****0cca`
 (redacted). `hardhat.config.js` loads it into the `arcTestnet` signer set, and
 The configured deployer signed the factory deployment recorded in
-`deployments/arc-testnet.json`, so this key has been used on-chain.
+`frontend/src/deployments/arc-testnet.json`, so this key has been used on-chain.
 
 ### Root cause
 Deployer secret kept unencrypted at rest. Mitigating controls are present —

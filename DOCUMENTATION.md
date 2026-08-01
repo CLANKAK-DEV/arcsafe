@@ -9,7 +9,7 @@ Independent N-of-M multi-signature custody, built on **Arc Network**.
 > | Live app | **https://arcsafe.vercel.app** (HTTPS, security headers, hosted on Vercel) |
 > | `NoxSafeFactory` | [`0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab`](https://testnet.arcscan.app/address/0x7054F65F8dE52985d7eF40C92dB3B9897cd8e9Ab) |
 > | Network | Arc Testnet, chain ID `5042002` |
-> | Verified | 12,907 bytes; runtime hash pinned in `deployments/arc-testnet.json` |
+> | Verified | 12,907 bytes; runtime hash pinned in `frontend/src/deployments/arc-testnet.json` |
 > | Tests | 43 passing |
 > | Security | Internal audit complete — 0 Critical, see [§14](#14-security-audit) and `security-report.md` |
 
@@ -443,7 +443,7 @@ vercel --prod --yes
 ```
 
 - Do not set `NEXT_PUBLIC_FACTORY_ADDRESS`; the frontend rejects overrides that
-  disagree with `deployments/arc-testnet.json`.
+  disagree with the verified deployment registry.
 - **Never** put `PRIVATE_KEY` in Vercel. The frontend does not use it.
 - Leave `BASE_PATH` unset so the app serves at root.
 

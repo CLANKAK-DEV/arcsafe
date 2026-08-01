@@ -1,5 +1,5 @@
 const hre = require('hardhat');
-const deployment = require('../deployments/arc-testnet.json');
+const deployment = require('../frontend/src/deployments/arc-testnet.json');
 
 async function main() {
   const { ethers } = hre;
